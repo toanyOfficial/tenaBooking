@@ -24,9 +24,8 @@ export function PricingPolicySection({ copy, pricing, checkIn, locale }: { copy:
       : null;
 
   return (
-    <section className="card" aria-labelledby="policy-title">
-      <h2 id="policy-title">{copy.title}</h2>
-      <div className="policyBlock">
+    <section className="card" aria-label={copy.title}>
+      <div className="policyBlock policyBlockFirst">
         <h3>{copy.rateTitle}</h3>
         <div className="rateList">
           {copy.rates.map((rate, index) => (
@@ -38,7 +37,7 @@ export function PricingPolicySection({ copy, pricing, checkIn, locale }: { copy:
         </div>
       </div>
       <div className="policyBlock">
-        <h3>{copy.refundTitle}</h3>
+        <h3 className="refundPolicyTitle">{copy.refundTitle}</h3>
         <dl className="refundList">
           {copy.refunds.map((refundRow) => (<div key={refundRow.period}><dt>{refundRow.period}</dt><dd>{refundRow.penalty}</dd></div>))}
         </dl>
