@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { PaymentConfirmationSheet } from '@/components/PaymentConfirmationSheet';
 import { PaymentCTA } from '@/components/PaymentCTA';
 import { PaymentStatusMessage } from '@/components/PaymentStatusMessage';
@@ -35,11 +35,21 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
   const [dates, setDates] = useState<BookingDateState>({ checkIn: '', checkOut: '' });
   const [paymentState, setPaymentState] = useState<PaymentState>('idle');
   const [statusMessage, setStatusMessage] = useState('');
+  const [showStickyPayment, setShowStickyPayment] = useState(false);
+  const primaryPaymentRef = useRef<HTMLDivElement>(null);
   const pricing = useMemo(() => calculateStayPricing(dates.checkIn, dates.checkOut, holidays), [dates.checkIn, dates.checkOut, holidays]);
   const summary = useMemo(() => createBookingSummary({ roomType: 'standard', checkIn: dates.checkIn, checkOut: dates.checkOut, stayNights: pricing.nights }), [dates.checkIn, dates.checkOut, pricing.nights]);
   const canPay = Boolean(summary && pricing.nights.length && pricing.totalAmount > 0 && paymentState !== 'creating' && paymentState !== 'redirecting');
   const disabledMessage = !summary ? copy.payment.selectDates : copy.payment.checkSchedule;
   const buttonLabel = paymentState === 'creating' ? copy.payment.creating : paymentState === 'redirecting' ? copy.payment.redirecting : canPay ? copy.payment.paypal : disabledMessage;
+
+  useEffect(() => {
+    const target = primaryPaymentRef.current;
+    if (!target) return;
+    const observer = new IntersectionObserver(([entry]) => setShowStickyPayment(!entry.isIntersecting), { threshold: 0.12 });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
 
   const requestPayment = async () => {
     if (!summary || paymentState === 'creating') return;
@@ -66,11 +76,13 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
         <span>{summary ? formatNightCount(summary.nights, copy.booking) : copy.booking.nightsValue}</span>
         <strong>{formatWon(pricing.totalAmount, localeMap[locale])}</strong>
       </div>
+      <div ref={primaryPaymentRef}>
+        <PayPalPaymentButton label={buttonLabel} disabled={!canPay} onClick={() => setPaymentState('confirming')} describedBy="payment-status" />
+      </div>
       <PaymentSummary copy={copy.payment} pricingCopy={copy.pricing} bookingCopy={copy.booking} pricing={pricing} locale={locale} />
-      <PayPalPaymentButton label={buttonLabel} disabled={!canPay} onClick={() => setPaymentState('confirming')} describedBy="payment-status" />
       <div id="payment-status"><PaymentStatusMessage message={statusMessage || disabledMessage} tone={paymentState === 'error' ? 'error' : statusMessage === copy.payment.mockNotice ? 'success' : 'neutral'} /></div>
       <PricingPolicySection copy={copy.pricing} pricing={pricing} checkIn={dates.checkIn} locale={locale} />
-      <PaymentCTA copy={copy.payment} totalAmount={pricing.totalAmount} locale={locale} disabled={!canPay} onClick={() => setPaymentState('confirming')} label={buttonLabel} />
+      <PaymentCTA copy={copy.payment} totalAmount={pricing.totalAmount} locale={locale} disabled={!canPay} visible={showStickyPayment} onClick={() => setPaymentState('confirming')} label={buttonLabel} />
       <PaymentConfirmationSheet open={paymentState === 'confirming'} summary={summary} locale={locale} copy={copy.payment.confirmation} roomCopy={copy.room} paymentCopy={copy.payment} bookingCopy={copy.booking} onClose={() => setPaymentState('idle')} onContinue={requestPayment} busy={paymentState === 'creating'} />
     </>
   );

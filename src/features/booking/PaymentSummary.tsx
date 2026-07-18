@@ -12,21 +12,17 @@ const rateLabel = (rate: RateType, copy: PricingCopy) => ({ low: copy.low, mid: 
 const rateReason = (rate: RateType, copy: PricingCopy) => ({ low: copy.lowReason, mid: copy.midReason, high: copy.highReason })[rate];
 const formatNightCount = (count: number, copy: BookingCopy) => count === 1 ? copy.oneNight : copy.nights.replace('{count}', String(count));
 
-export function PaymentSummary({ copy, pricingCopy, bookingCopy, pricing, locale }: { copy: PaymentCopy; pricingCopy: PricingCopy; bookingCopy: BookingCopy; pricing: { nights: StayNight[]; totalAmount: number }; locale: Locale }) {
+export function PaymentSummary({ pricingCopy, bookingCopy, pricing, locale }: { copy: PaymentCopy; pricingCopy: PricingCopy; bookingCopy: BookingCopy; pricing: { nights: StayNight[]; totalAmount: number }; locale: Locale }) {
   const rateGroups = rateTypes.map((rateType) => {
     const nights = pricing.nights.filter((night) => night.rateType === rateType);
     return { rateType, count: nights.length, amount: nights.reduce((sum, night) => sum + night.amount, 0) };
   }).filter((group) => group.count > 0);
 
   return (
-    <section className="card" aria-labelledby="payment-title">
-      <h2 id="payment-title">{copy.title}</h2>
-      <dl className="paymentRows compactPaymentRows" aria-live="polite">
-        <div className="totalRow"><dt>{copy.total}</dt><dd>{formatWon(pricing.totalAmount, localeMap[locale])}</dd></div>
-      </dl>
+    <section className="card" aria-labelledby="rate-details-title">
+      <h2 id="rate-details-title">{pricingCopy.rateDetails}</h2>
       {rateGroups.length ? (
-        <div className="rateDetails" aria-labelledby="rate-details-title">
-          <h3 id="rate-details-title">{pricingCopy.rateDetails}</h3>
+        <div className="rateDetails groupedRateDetails">
           {rateGroups.map((group) => (
             <article key={group.rateType} className="rateDetailRow groupedRateRow">
               <div><strong>{rateLabel(group.rateType, pricingCopy)}</strong><span>{rateReason(group.rateType, pricingCopy)}</span></div>
@@ -35,8 +31,6 @@ export function PaymentSummary({ copy, pricingCopy, bookingCopy, pricing, locale
           ))}
         </div>
       ) : <p className="helperText">{pricingCopy.selectDatesFirst}</p>}
-      <button className="primaryButton fullWidth" type="button" disabled>{copy.paypal}</button>
-      <p className="helperText">{copy.disabledNotice}</p>
     </section>
   );
 }
