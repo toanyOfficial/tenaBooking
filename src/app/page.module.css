@@ -1,0 +1,67 @@
+.shell {
+  width: min(100%, 520px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.brandArea {
+  padding: 28px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--color-gold);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brandArea h1 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: clamp(2rem, 9vw, 3rem);
+  line-height: 1.02;
+}
+
+.lead {
+  margin: 16px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.section {
+  margin-top: 14px;
+  padding: 18px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.section:nth-of-type(2n) {
+  background: var(--color-sage-light);
+}
+
+.section h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+
+.section p {
+  margin: 8px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+  .shell {
+    padding-top: 48px;
+  }
+}
