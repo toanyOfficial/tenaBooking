@@ -1,0 +1,12 @@
+.shell {
+  width: min(100%, 500px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 16px 16px calc(132px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+  .shell {
+    padding-top: 24px;
+  }
+}
