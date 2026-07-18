@@ -5,8 +5,10 @@
   --color-text-secondary: #6f7477;
   --color-border: #e7e5e0;
   --color-gold: #b49a68;
+  --color-gold-dark: #9b8355;
   --color-gold-light: #f4efe5;
   --color-sage-light: #e8efeb;
+  --color-danger: #b45b5b;
 }
 
 * {
@@ -15,13 +17,20 @@
 
 html {
   background: var(--color-background);
+  scroll-behavior: smooth;
 }
 
 body {
+  min-width: 320px;
   margin: 0;
   background: var(--color-background);
   color: var(--color-text-primary);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 button,
@@ -29,4 +38,478 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+button {
+  min-height: 44px;
+}
+
+.appHeader {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  width: min(100%, 500px);
+  min-height: 60px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(250, 250, 248, 0.96);
+}
+
+.brand {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-text-primary);
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.brand strong {
+  color: var(--color-gold-dark);
+  font-weight: 800;
+}
+
+.languageButton {
+  display: inline-flex;
+  min-width: 66px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.gallery {
+  margin-bottom: 16px;
+}
+
+.galleryPanel {
+  position: relative;
+  display: grid;
+  aspect-ratio: 1 / 1;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--color-surface), var(--color-sage-light));
+}
+
+.galleryPanel p {
+  max-width: 230px;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.galleryLines {
+  position: absolute;
+  inset: 22px;
+  display: grid;
+  gap: 12px;
+  opacity: 0.55;
+}
+
+.galleryLines span {
+  border: 1px solid rgba(111, 116, 119, 0.24);
+  border-radius: 12px;
+}
+
+.galleryIndicator {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--color-text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.roomSummary,
+.card,
+.businessInfo {
+  margin-top: 14px;
+  padding: 18px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+}
+
+.roomSummary h1,
+.card h2,
+.businessInfo h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  letter-spacing: -0.03em;
+}
+
+.roomSummary h1 {
+  font-size: clamp(1.8rem, 8vw, 2.4rem);
+  line-height: 1.05;
+}
+
+.card h2,
+.businessInfo h2 {
+  font-size: 1.15rem;
+}
+
+.roomSummary > p,
+.helperText {
+  margin: 10px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+.summaryGrid,
+.paymentRows,
+.refundList,
+.businessInfo dl {
+  margin: 16px 0 0;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.summaryItem,
+.nightsRow,
+.paymentRows div,
+.refundList div,
+.businessInfo dl div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.summaryItem {
+  min-height: 58px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+}
+
+.summaryItem dt,
+.paymentRows dt,
+.refundList dt,
+.businessInfo dt,
+.nightsRow span {
+  color: var(--color-text-secondary);
+  font-size: 0.86rem;
+}
+
+.summaryItem dd,
+.paymentRows dd,
+.refundList dd,
+.businessInfo dd,
+.nightsRow strong {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-weight: 800;
+  text-align: right;
+}
+
+.dateGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.dateCard {
+  display: flex;
+  min-width: 0;
+  min-height: 72px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  text-align: left;
+}
+
+.dateCard span {
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+}
+
+.dateCard strong {
+  margin-top: 5px;
+  font-size: 0.98rem;
+}
+
+.nightsRow {
+  min-height: 48px;
+  margin-top: 10px;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: var(--color-gold-light);
+}
+
+.paymentRows {
+  display: grid;
+  gap: 12px;
+}
+
+.paymentRows div {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.paymentRows .totalRow {
+  border-bottom: 0;
+}
+
+.totalRow dt,
+.totalRow dd {
+  color: var(--color-text-primary);
+  font-size: 1.08rem;
+}
+
+.primaryButton {
+  min-height: 52px;
+  border: 1px solid var(--color-gold-dark);
+  border-radius: 12px;
+  background: var(--color-gold);
+  color: var(--color-surface);
+  font-weight: 800;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--color-gold-dark);
+}
+
+.primaryButton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.primaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.fullWidth {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.amenityGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.amenityGrid li {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+}
+
+.amenityGrid span {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border: 1px solid var(--color-gold-dark);
+  border-radius: 50%;
+  background: var(--color-gold-light);
+}
+
+.policyBlock {
+  margin-top: 16px;
+}
+
+.policyBlock h3,
+.guideList h3 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 0.98rem;
+}
+
+.rateList,
+.guideList,
+.contactList {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.rateList article,
+.guideList article {
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+}
+
+.rateList article {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rateList strong,
+.rateList b {
+  color: var(--color-text-primary);
+}
+
+.rateList span,
+.guideList p {
+  display: block;
+  margin-top: 5px;
+  color: var(--color-text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.refundList {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.refundList div {
+  min-height: 46px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.refundList div:last-child {
+  border-bottom: 0;
+}
+
+.contactButton {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+.contactButton strong {
+  color: var(--color-text-secondary);
+}
+
+.businessInfo {
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+}
+
+.businessInfo dl {
+  display: grid;
+  gap: 8px;
+}
+
+.businessInfo nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.paymentCta {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: minmax(82px, 1fr) minmax(0, 1.6fr);
+  gap: 10px;
+  width: min(100%, 500px);
+  margin: 0 auto;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.paymentCta div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.paymentCta span {
+  color: var(--color-text-secondary);
+  font-size: 0.74rem;
+}
+
+.paymentCta strong {
+  color: var(--color-text-primary);
+  font-size: 1.05rem;
+}
+
+@media (max-width: 340px) {
+  .appHeader {
+    padding: 0 12px;
+  }
+
+  .brand {
+    font-size: 0.88rem;
+  }
+
+  .dateGrid,
+  .paymentCta {
+    gap: 8px;
+  }
+
+  .amenityGrid li,
+  .dateCard {
+    padding: 10px 8px;
+  }
+}
+
+@media (min-width: 430px) {
+  .summaryGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .summaryItem {
+    display: block;
+  }
+
+  .summaryItem dd {
+    margin-top: 6px;
+    text-align: left;
+  }
 }
