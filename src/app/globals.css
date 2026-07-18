@@ -1351,6 +1351,12 @@ button {
   overflow-wrap: anywhere;
 }
 
+.languageMenuChevron {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
 .languageIconSlot {
   display: inline-flex;
   width: 22px;
