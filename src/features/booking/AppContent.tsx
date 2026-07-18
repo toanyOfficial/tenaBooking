@@ -15,14 +15,13 @@ import styles from '@/app/page.module.css';
 
 export function AppContent({ holidays }: { holidays: Holiday[] }) {
   const { locale, t } = useLocale();
-  const featuredAmenities = roomAmenities.filter((amenity) => amenity.featured);
   return (
     <>
       <Header copy={t.header} />
       <main id="top" className={styles.shell}>
         <BookingFlow locale={locale} copy={{ booking: t.booking, payment: t.payment, pricing: t.pricing, room: t.room }} holidays={holidays} />
         <RoomGallery images={standardRoomImages} copy={t.room} />
-        <RoomSummary copy={t.room} featuredAmenities={featuredAmenities} amenityLabels={t.amenities.items} />
+        <RoomSummary copy={t.room} />
         <AmenitiesSection copy={t.amenities} amenities={roomAmenities} />
         <GuideSection copy={t.guide} />
         <ContactSection copy={t.contact} />

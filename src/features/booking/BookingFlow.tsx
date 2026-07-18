@@ -24,7 +24,7 @@ type BookingFlowProps = {
   locale: Locale;
   copy: {
     booking: Parameters<typeof BookingDateSection>[0]['copy'];
-    payment: Parameters<typeof PaymentSummary>[0]['copy'] & { stickyTotalLabel: string; selectDates: string; calculating: string; checkSchedule: string; creating: string; redirecting: string; error: string; mockNotice: string; confirmation: Parameters<typeof PaymentConfirmationSheet>[0]['copy'] };
+    payment: { paypal: string; total: string; stickyTotalLabel: string; selectDates: string; calculating: string; checkSchedule: string; creating: string; redirecting: string; error: string; mockNotice: string; confirmation: Parameters<typeof PaymentConfirmationSheet>[0]['copy'] };
     pricing: Parameters<typeof PricingPolicySection>[0]['copy'] & Parameters<typeof PaymentSummary>[0]['pricingCopy'];
     room: { type: string };
   };
@@ -79,7 +79,7 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
       <div ref={primaryPaymentRef}>
         <PayPalPaymentButton label={buttonLabel} disabled={!canPay} onClick={() => setPaymentState('confirming')} describedBy="payment-status" />
       </div>
-      <PaymentSummary copy={copy.payment} pricingCopy={copy.pricing} bookingCopy={copy.booking} pricing={pricing} locale={locale} />
+      <PaymentSummary pricingCopy={copy.pricing} bookingCopy={copy.booking} pricing={pricing} locale={locale} />
       <div id="payment-status"><PaymentStatusMessage message={statusMessage || disabledMessage} tone={paymentState === 'error' ? 'error' : statusMessage === copy.payment.mockNotice ? 'success' : 'neutral'} /></div>
       <PricingPolicySection copy={copy.pricing} pricing={pricing} checkIn={dates.checkIn} locale={locale} />
       <PaymentCTA copy={copy.payment} totalAmount={pricing.totalAmount} locale={locale} disabled={!canPay} visible={showStickyPayment} onClick={() => setPaymentState('confirming')} label={buttonLabel} />

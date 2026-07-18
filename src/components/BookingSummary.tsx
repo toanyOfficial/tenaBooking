@@ -4,7 +4,7 @@ import type { BookingSummary as BookingSummaryType } from '@/features/booking/bo
 import type { Locale } from '@/locales/messages';
 
 type Copy = { type: string };
-type PaymentCopy = { roomCharge: string; extraCharge: string; total: string };
+type PaymentCopy = { total: string };
 type BookingCopy = { nights: string; oneNight: string };
 const localeMap: Record<Locale, string> = { en: 'en-US', ko: 'ko-KR', 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', ja: 'ja-JP', th: 'th-TH', vi: 'vi-VN', ru: 'ru-RU' };
 
@@ -16,9 +16,7 @@ export function BookingSummary({ summary, roomCopy, paymentCopy, bookingCopy, lo
       <p>{formatDateForLocale(summary.checkIn, locale)} - {formatDateForLocale(summary.checkOut, locale)}</p>
       <strong>{nightsLabel}</strong>
       <dl>
-        <div><dt>{paymentCopy.roomCharge}</dt><dd>{formatWon(summary.accommodationAmount, localeMap[locale])}</dd></div>
-        <div><dt>{paymentCopy.extraCharge}</dt><dd>{formatWon(summary.additionalAmount, localeMap[locale])}</dd></div>
-        <div><dt>{paymentCopy.total}</dt><dd>{formatWon(summary.totalAmount, localeMap[locale])}</dd></div>
+        <div className="totalRow"><dt>{paymentCopy.total}</dt><dd>{formatWon(summary.totalAmount, localeMap[locale])}</dd></div>
       </dl>
     </div>
   );

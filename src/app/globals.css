@@ -1287,3 +1287,8 @@ button {
     display: grid;
   }
 }
+
+.refundAgreementText {
+  color: var(--color-danger);
+  font-weight: 800;
+}

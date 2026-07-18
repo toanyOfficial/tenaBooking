@@ -2,7 +2,6 @@ import { formatWon } from '@/features/booking/pricing';
 import type { RateType, StayNight } from '@/features/booking/pricing';
 import type { Locale } from '@/locales/messages';
 
-type PaymentCopy = { title: string; roomCharge: string; extraCharge: string; total: string; paypal: string; disabledNotice: string };
 type PricingCopy = { low: string; mid: string; high: string; rateDetails: string; selectDatesFirst: string; lowReason: string; midReason: string; highReason: string };
 type BookingCopy = { oneNight: string; nights: string };
 
@@ -12,7 +11,7 @@ const rateLabel = (rate: RateType, copy: PricingCopy) => ({ low: copy.low, mid: 
 const rateReason = (rate: RateType, copy: PricingCopy) => ({ low: copy.lowReason, mid: copy.midReason, high: copy.highReason })[rate];
 const formatNightCount = (count: number, copy: BookingCopy) => count === 1 ? copy.oneNight : copy.nights.replace('{count}', String(count));
 
-export function PaymentSummary({ pricingCopy, bookingCopy, pricing, locale }: { copy: PaymentCopy; pricingCopy: PricingCopy; bookingCopy: BookingCopy; pricing: { nights: StayNight[]; totalAmount: number }; locale: Locale }) {
+export function PaymentSummary({ pricingCopy, bookingCopy, pricing, locale }: { pricingCopy: PricingCopy; bookingCopy: BookingCopy; pricing: { nights: StayNight[]; totalAmount: number }; locale: Locale }) {
   const rateGroups = rateTypes.map((rateType) => {
     const nights = pricing.nights.filter((night) => night.rateType === rateType);
     return { rateType, count: nights.length, amount: nights.reduce((sum, night) => sum + night.amount, 0) };
