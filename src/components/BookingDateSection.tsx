@@ -93,7 +93,7 @@ export function BookingDateSection({ copy, locale, value, onChange }: { copy: Bo
     if (error) return error;
     if (!dates.checkIn && !dates.checkOut) return copy.selectSchedule;
     if (dates.checkIn && !dates.checkOut) return copy.selectCheckOut;
-    if (nights && isValidRange) return copy.totalNights.replace('{nights}', formatNightCount(nights, copy));
+    if (nights && isValidRange) return '';
     return copy.selectSchedule;
   }, [copy, dates.checkIn, dates.checkOut, error, isValidRange, nights]);
 
@@ -169,9 +169,7 @@ export function BookingDateSection({ copy, locale, value, onChange }: { copy: Bo
           </div>
         </div>
       ) : null}
-      {dates.checkIn && dates.checkOut && nights && isValidRange ? <div className="selectedSchedule" aria-live="polite"><span>{formattedCheckIn} - {formattedCheckOut}</span><strong>{formatNightCount(nights, copy)}</strong></div> : null}
-      <div className="nightsRow"><span>{copy.nightsLabel}</span><strong>{nights && isValidRange ? formatNightCount(nights, copy) : copy.nightsValue}</strong></div>
-      <p id="booking-date-status" className={error ? 'helperText errorText' : 'helperText'} aria-live="polite">{error ? `! ${error}` : status}</p>
+      {status ? <p id="booking-date-status" className={error ? 'helperText errorText' : 'helperText'} aria-live="polite">{error ? `! ${error}` : status}</p> : null}
     </section>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { BookingSummary } from '@/components/BookingSummary';
 import { PaymentConfirmationSheet } from '@/components/PaymentConfirmationSheet';
 import { PaymentCTA } from '@/components/PaymentCTA';
 import { PaymentStatusMessage } from '@/components/PaymentStatusMessage';
@@ -10,13 +9,16 @@ import { BookingDateSection } from '@/components/BookingDateSection';
 import { PaymentSummary } from '@/features/booking/PaymentSummary';
 import { PricingPolicySection } from '@/features/booking/PricingPolicySection';
 import { createBookingSummary } from '@/features/booking/bookingSummary';
-import { calculateStayPricing } from '@/features/booking/pricing';
+import { calculateStayPricing, formatWon } from '@/features/booking/pricing';
 import type { Holiday } from '@/features/booking/types/holiday';
 import type { CreatePayPalOrderResponse } from '@/features/booking/types/paypal';
 import type { Locale } from '@/locales/messages';
 
 type BookingDateState = { checkIn: string; checkOut: string };
 type PaymentState = 'idle' | 'confirming' | 'creating' | 'redirecting' | 'error';
+
+const localeMap: Record<Locale, string> = { en: 'en-US', ko: 'ko-KR', 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', ja: 'ja-JP', th: 'th-TH', vi: 'vi-VN', ru: 'ru-RU' };
+const formatNightCount = (count: number, copy: { oneNight: string; nights: string }) => count === 1 ? copy.oneNight : copy.nights.replace('{count}', String(count));
 
 type BookingFlowProps = {
   locale: Locale;
@@ -60,8 +62,11 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
   return (
     <>
       <BookingDateSection copy={copy.booking} locale={locale} value={dates} onChange={setDates} />
-      <PaymentSummary copy={copy.payment} pricingCopy={copy.pricing} pricing={pricing} locale={locale} />
-      {summary ? <BookingSummary summary={summary} roomCopy={copy.room} paymentCopy={copy.payment} bookingCopy={copy.booking} locale={locale} /> : null}
+      <div className="bookingQuickTotal" aria-live="polite">
+        <span>{summary ? formatNightCount(summary.nights, copy.booking) : copy.booking.nightsValue}</span>
+        <strong>{formatWon(pricing.totalAmount, localeMap[locale])}</strong>
+      </div>
+      <PaymentSummary copy={copy.payment} pricingCopy={copy.pricing} bookingCopy={copy.booking} pricing={pricing} locale={locale} />
       <PayPalPaymentButton label={buttonLabel} disabled={!canPay} onClick={() => setPaymentState('confirming')} describedBy="payment-status" />
       <div id="payment-status"><PaymentStatusMessage message={statusMessage || disabledMessage} tone={paymentState === 'error' ? 'error' : statusMessage === copy.payment.mockNotice ? 'success' : 'neutral'} /></div>
       <PricingPolicySection copy={copy.pricing} pricing={pricing} checkIn={dates.checkIn} locale={locale} />
