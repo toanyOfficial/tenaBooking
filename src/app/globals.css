@@ -800,3 +800,124 @@ button {
   font-size: 0.84rem;
   line-height: 1.5;
 }
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.languageSelect select {
+  min-height: 44px;
+  max-width: 132px;
+  padding: 0 30px 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-weight: 800;
+}
+
+.bookingSummaryBox {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+}
+
+.bookingSummaryBox h3,
+.paymentSheet h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.bookingSummaryBox p {
+  margin: 8px 0 0;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
+.bookingSummaryBox > strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-gold-dark);
+}
+
+.bookingSummaryBox dl {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+
+.bookingSummaryBox dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.paymentStatus {
+  width: min(100%, 500px);
+  margin: 10px auto 0;
+  padding: 0 16px;
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.paymentStatus.error { color: var(--color-danger); font-weight: 700; }
+.paymentStatus.success { color: var(--color-gold-dark); font-weight: 700; }
+
+.sheetBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(32, 35, 38, 0.36);
+}
+
+.paymentSheet {
+  width: min(100%, 500px);
+  max-height: calc(100svh - 32px);
+  overflow: auto;
+  padding: 20px 16px calc(16px + env(safe-area-inset-bottom));
+  border: 1px solid var(--color-border);
+  border-radius: 16px 16px 12px 12px;
+  background: var(--color-surface);
+}
+
+.paymentSheet > p {
+  margin: 10px 0 0;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.sheetActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.secondaryButton {
+  min-height: 52px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-weight: 800;
+}
+
+@media (max-width: 340px) {
+  .sheetActions {
+    grid-template-columns: 1fr;
+  }
+}
