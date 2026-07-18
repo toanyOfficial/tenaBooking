@@ -3,7 +3,10 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Premium Medical Stay',
-  description: 'Hospital-connected accommodation booking prototype'
+  description: 'Hospital-connected accommodation booking prototype',
+  icons: {
+    icon: '/favicon.ico'
+  }
 };
 
 export const viewport: Viewport = {

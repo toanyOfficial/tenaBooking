@@ -5,12 +5,21 @@ import { useLocale } from '@/features/booking/LocaleProvider';
 import type { Locale } from '@/locales/messages';
 
 const labels: Record<Locale, string> = { en: 'English', ko: '한국어', 'zh-CN': '简体中文', 'zh-TW': '繁體中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt', ru: 'Русский' };
-const languageIcons: Record<Locale, string | null> = { en: null, ko: null, 'zh-CN': null, 'zh-TW': null, ja: null, th: null, vi: null, ru: null };
+const languageIcons: Record<Locale, string> = {
+  en: '/images/languages/en.svg',
+  ko: '/images/languages/ko.svg',
+  'zh-CN': '/images/languages/zh-CN.svg',
+  'zh-TW': '/images/languages/zh-TW.svg',
+  ja: '/images/languages/ja.svg',
+  th: '/images/languages/th.svg',
+  vi: '/images/languages/vi.svg',
+  ru: '/images/languages/ru.svg'
+};
 const options = Object.keys(labels) as Locale[];
 
 function LanguageIconSlot({ locale }: { locale: Locale }) {
   const icon = languageIcons[locale];
-  return <span className="languageIconSlot" aria-hidden="true">{icon ? <img src={icon} alt="" /> : null}</span>;
+  return <span className="languageIconSlot" aria-hidden="true"><img src={icon} alt="" /></span>;
 }
 
 export function LanguageSelector() {
