@@ -4,11 +4,11 @@ import { useState } from 'react';
 
 type GuideCopy = { title: string; importantTitle: string; importantDescription: string; items: Array<{ title: string; description: string }> };
 
-export function GuideSection({ copy }: { copy: GuideCopy }) {
+export function GuideSection({ copy, hideTitle = false }: { copy: GuideCopy; hideTitle?: boolean }) {
   const [openIndex, setOpenIndex] = useState(0);
   return (
-    <section className="card" aria-labelledby="guide-title">
-      <h2 id="guide-title">{copy.title}</h2>
+    <section className="card guideSectionCard" aria-labelledby="guide-title">
+      {hideTitle ? <span id="guide-title" className="srOnly">{copy.title}</span> : <h2 id="guide-title">{copy.title}</h2>}
       <aside className="importantNotice"><h3>{copy.importantTitle}</h3><p>{copy.importantDescription}</p></aside>
       <div className="guideList">
         {copy.items.map((item, index) => {

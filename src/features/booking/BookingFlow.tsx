@@ -106,9 +106,9 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
       ) : null}
       {guideOpen ? (
         <div className="sheetBackdrop policyBackdrop" onClick={() => setGuideOpen(false)}>
-          <section className="paymentSheet guideSheet" role="dialog" aria-modal="true" aria-labelledby="guide-title" onClick={(event) => event.stopPropagation()}>
-            <div className="modalTitleRow modalCloseOnly"><button type="button" className="policyCloseButton" aria-label={copy.payment.confirmation.cancel} onClick={() => setGuideOpen(false)}>×</button></div>
-            <GuideSection copy={copy.guide} />
+          <section className="paymentSheet guideSheet" role="dialog" aria-modal="true" aria-labelledby="guide-modal-title" onClick={(event) => event.stopPropagation()}>
+            <div className="modalTitleRow guideModalTitleRow"><h2 id="guide-modal-title">{copy.guide.title}</h2><button type="button" className="policyCloseButton" aria-label={copy.payment.confirmation.cancel} onClick={() => setGuideOpen(false)}>×</button></div>
+            <GuideSection copy={copy.guide} hideTitle />
           </section>
         </div>
       ) : null}

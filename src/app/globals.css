@@ -483,11 +483,6 @@ button {
   line-height: 1;
 }
 
-.modalCloseOnly {
-  justify-content: flex-end;
-  margin-bottom: 12px;
-}
-
 .completionSheet {
   text-align: center;
 }
@@ -497,10 +492,15 @@ button {
   text-align: left;
 }
 
-.guideSheet .card {
+.guideSheet .card,
+.guideSectionCard {
   padding: 0;
   border: 0;
   box-shadow: none;
+}
+
+.guideModalTitleRow {
+  margin-bottom: 12px;
 }
 
 .fullWidth {
@@ -994,10 +994,15 @@ button {
   width: min(100%, 500px);
   max-height: calc(100svh - 32px);
   overflow: auto;
+  scrollbar-width: none;
   padding: 20px 16px calc(16px + env(safe-area-inset-bottom));
   border: 1px solid var(--color-border);
   border-radius: 16px 16px 12px 12px;
   background: var(--color-surface);
+}
+
+.paymentSheet::-webkit-scrollbar {
+  display: none;
 }
 
 .paymentSheet > p {
@@ -1425,8 +1430,7 @@ button {
 }
 
 @media (max-width: 360px) {
-  .bookingHeaderRow,
-  .modalTitleRow {
+  .bookingHeaderRow {
     align-items: flex-start;
     flex-direction: column;
   }
