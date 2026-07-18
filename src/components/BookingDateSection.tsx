@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import type { Locale } from '@/locales/messages';
 import { addDays, calculateStayNights, formatDateForLocale, getTodayDateString, isDateBefore, isValidStayRange, MAX_STAY_NIGHTS, MIN_STAY_NIGHTS, parseDateString } from '@/lib/date';
 
@@ -23,7 +23,7 @@ type BookingCopy = {
   checkInPastError: string;
 };
 
-type BookingDateState = {
+export type BookingDateState = {
   checkIn: string;
   checkOut: string;
 };
@@ -32,8 +32,11 @@ function formatNightCount(nights: number, copy: BookingCopy) {
   return nights === 1 ? copy.oneNight : copy.nights.replace('{count}', String(nights));
 }
 
-export function BookingDateSection({ copy, locale }: { copy: BookingCopy; locale: Locale }) {
-  const [dates, setDates] = useState<BookingDateState>({ checkIn: '', checkOut: '' });
+export function BookingDateSection({ copy, locale, value, onChange }: { copy: BookingCopy; locale: Locale; value: BookingDateState; onChange: (value: BookingDateState) => void }) {
+  const dates = value;
+  const setDates = (updater: BookingDateState | ((previous: BookingDateState) => BookingDateState)) => {
+    onChange(typeof updater === 'function' ? updater(dates) : updater);
+  };
   const today = useMemo(() => getTodayDateString(), []);
   const minCheckOut = dates.checkIn ? addDays(dates.checkIn, MIN_STAY_NIGHTS) : '';
   const maxCheckOut = dates.checkIn ? addDays(dates.checkIn, MAX_STAY_NIGHTS) : '';
