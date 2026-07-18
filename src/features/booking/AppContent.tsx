@@ -8,6 +8,7 @@ import { RoomSummary } from '@/components/RoomSummary';
 import { AmenitiesSection } from '@/features/booking/AmenitiesSection';
 import { BookingFlow } from '@/features/booking/BookingFlow';
 import { GuideSection } from '@/features/booking/GuideSection';
+import { StayGuideSection } from '@/features/booking/StayGuideSection';
 import { useLocale } from '@/features/booking/LocaleProvider';
 import { roomAmenities, standardRoomImages } from '@/features/booking/roomData';
 import type { Holiday } from '@/features/booking/types/holiday';
@@ -23,6 +24,7 @@ export function AppContent({ holidays }: { holidays: Holiday[] }) {
         <RoomGallery images={standardRoomImages} copy={t.room} />
         <RoomSummary copy={t.room} />
         <AmenitiesSection copy={t.amenities} amenities={roomAmenities} />
+        <StayGuideSection copy={t.stayGuide} />
         <GuideSection copy={t.guide} />
         <ContactSection copy={t.contact} />
         <BusinessInfo copy={t.business} locale={locale} />
