@@ -1,0 +1,29 @@
+'use client';
+
+import { useState } from 'react';
+
+type GuideCopy = { title: string; importantTitle: string; importantDescription: string; items: Array<{ title: string; description: string }> };
+
+export function GuideSection({ copy }: { copy: GuideCopy }) {
+  const [openIndex, setOpenIndex] = useState(0);
+  return (
+    <section className="card" aria-labelledby="guide-title">
+      <h2 id="guide-title">{copy.title}</h2>
+      <aside className="importantNotice"><h3>{copy.importantTitle}</h3><p>{copy.importantDescription}</p></aside>
+      <div className="guideList">
+        {copy.items.map((item, index) => {
+          const open = openIndex === index;
+          const panelId = `guide-panel-${index}`;
+          return (
+            <article key={item.title} className="guideAccordionItem">
+              <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpenIndex(open ? -1 : index)}>
+                <span>{item.title}</span><span aria-hidden="true">{open ? '−' : '+'}</span>
+              </button>
+              <p id={panelId} hidden={!open}>{item.description}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
