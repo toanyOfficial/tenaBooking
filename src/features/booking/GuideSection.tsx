@@ -19,7 +19,7 @@ export function GuideSection({ copy, hideTitle = false }: { copy: GuideCopy; hid
               <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpenIndex(open ? -1 : index)}>
                 <span>{item.title}</span><span aria-hidden="true">{open ? '−' : '+'}</span>
               </button>
-              <p id={panelId} hidden={!open}>{item.description}</p>
+              <p id={panelId} className="guideAccordionPanel" hidden={!open}>{item.description}</p>
             </article>
           );
         })}

@@ -1083,6 +1083,10 @@ button {
   line-height: 1.55;
 }
 
+.guideAccordionPanel[hidden] {
+  display: none;
+}
+
 .contactCard {
   display: grid;
   gap: 12px;
