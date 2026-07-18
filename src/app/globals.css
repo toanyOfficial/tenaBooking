@@ -1409,7 +1409,7 @@ button {
 
 .stayGuideContent {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  grid-template-columns: 1fr;
   align-items: stretch;
 }
 
@@ -1427,7 +1427,7 @@ button {
 
 .stayGuideNote {
   padding: 14px 16px;
-  border-left: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
   background: #FAF3E8;
   color: #5D4935;
 }
@@ -1443,15 +1443,4 @@ button {
   margin-bottom: 6px;
   color: #B7834F;
   font-size: 0.86rem;
-}
-
-@media (max-width: 560px) {
-  .stayGuideContent {
-    grid-template-columns: 1fr;
-  }
-
-  .stayGuideNote {
-    border-left: 0;
-    border-top: 1px solid var(--color-border);
-  }
 }
