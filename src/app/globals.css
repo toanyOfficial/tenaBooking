@@ -1341,7 +1341,7 @@ button {
 
 .stayGuideGrid {
   display: grid;
-  gap: 14px;
+  gap: 10px;
   margin-top: 16px;
 }
 
@@ -1352,10 +1352,27 @@ button {
   background: var(--color-surface);
 }
 
-.stayGuideBenefit {
-  padding: 16px;
+.stayGuideHeading {
+  margin: 0;
+}
+
+.stayGuideToggle {
+  display: grid;
+  width: 100%;
+  min-height: 58px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 0;
   background: #EEF6F8;
   color: #23383D;
+  text-align: left;
+}
+
+.stayGuideToggle:hover,
+.stayGuideToggle:focus-visible {
+  background: #E6F1F4;
 }
 
 .stayGuideIcon {
@@ -1363,36 +1380,78 @@ button {
   width: 38px;
   height: 38px;
   place-items: center;
-  margin-bottom: 10px;
   border-radius: 12px;
   background: rgba(94, 135, 145, 0.12);
   color: #5E8791;
+  flex-shrink: 0;
 }
 
-.stayGuideCard h3 {
-  margin: 0;
+.stayGuideTitle {
+  min-width: 0;
   font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
-.stayGuideCard p {
-  margin: 8px 0 0;
-  line-height: 1.6;
+.stayGuideChevron {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.18s ease;
+}
+
+.stayGuideToggle[aria-expanded="true"] .stayGuideChevron {
+  transform: rotate(225deg);
+}
+
+.stayGuideContent {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  align-items: stretch;
+}
+
+.stayGuideContent[hidden] {
+  display: none;
+}
+
+.stayGuideBenefit {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  background: #EEF6F8;
+  color: #23383D;
 }
 
 .stayGuideNote {
   padding: 14px 16px;
-  border-top: 1px solid var(--color-border);
+  border-left: 1px solid var(--color-border);
   background: #FAF3E8;
   color: #5D4935;
 }
 
+.stayGuideCard p {
+  margin: 0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
 .stayGuideNote strong {
+  display: block;
+  margin-bottom: 6px;
   color: #B7834F;
   font-size: 0.86rem;
 }
 
-@media (min-width: 768px) {
-  .stayGuideGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+@media (max-width: 560px) {
+  .stayGuideContent {
+    grid-template-columns: 1fr;
+  }
+
+  .stayGuideNote {
+    border-left: 0;
+    border-top: 1px solid var(--color-border);
   }
 }
