@@ -26,7 +26,7 @@ export function AppContent({ holidays }: { holidays: Holiday[] }) {
         <AmenitiesSection copy={t.amenities} amenities={roomAmenities} />
         <GuideSection copy={t.guide} />
         <ContactSection copy={t.contact} />
-        <BusinessInfo copy={t.business} />
+        <BusinessInfo copy={t.business} locale={locale} />
       </main>
     </>
   );

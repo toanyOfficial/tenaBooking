@@ -921,3 +921,106 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+.importantNotice {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-sage-light);
+}
+
+.importantNotice h3,
+.contactCard h3 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+
+.importantNotice p,
+.contactCard p,
+.contactCard small {
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.guideAccordionItem {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+}
+
+.guideAccordionItem button {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-weight: 800;
+  text-align: left;
+}
+
+.guideAccordionItem p {
+  margin: 0;
+  padding: 0 12px 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.contactCard {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+}
+
+.contactCard p,
+.contactCard small { display: block; margin: 6px 0 0; }
+
+.contactButton.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.siteFooter {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+
+.legalPage {
+  width: min(100%, 500px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.legalPage > a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--color-gold-dark);
+  font-weight: 800;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--color-gold-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
