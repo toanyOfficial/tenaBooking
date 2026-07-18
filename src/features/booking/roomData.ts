@@ -30,10 +30,10 @@ export type Amenity = {
 };
 
 export const standardRoomImages: RoomImage[] = [
-  { id: 'bedroom', src: '/images/room/standard-01.svg' },
-  { id: 'kitchen', src: '/images/room/standard-02.svg' },
-  { id: 'bathroom', src: '/images/room/standard-03.svg' },
-  { id: 'overview', src: '/images/room/standard-05.svg' }
+  { id: 'bedroom', src: '/images/room/standard-01.png' },
+  { id: 'kitchen', src: '/images/room/standard-02.png' },
+  { id: 'bathroom', src: '/images/room/standard-03.png' },
+  { id: 'overview', src: '/images/room/standard-05.png' }
 ];
 
 export const roomAmenities: Amenity[] = [
