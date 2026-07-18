@@ -22,7 +22,7 @@ type BookingFlowProps = {
   locale: Locale;
   copy: {
     booking: Parameters<typeof BookingDateSection>[0]['copy'];
-    payment: Parameters<typeof PaymentSummary>[0]['copy'] & { selectDates: string; calculating: string; checkSchedule: string; creating: string; redirecting: string; error: string; mockNotice: string; confirmation: Parameters<typeof PaymentConfirmationSheet>[0]['copy'] };
+    payment: Parameters<typeof PaymentSummary>[0]['copy'] & { stickyTotalLabel: string; selectDates: string; calculating: string; checkSchedule: string; creating: string; redirecting: string; error: string; mockNotice: string; confirmation: Parameters<typeof PaymentConfirmationSheet>[0]['copy'] };
     pricing: Parameters<typeof PricingPolicySection>[0]['copy'] & Parameters<typeof PaymentSummary>[0]['pricingCopy'];
     room: { type: string };
   };
