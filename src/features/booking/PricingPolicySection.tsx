@@ -11,7 +11,7 @@ type PricingCopy = {
   refund: { cancelToday: string; daysBeforeCheckIn: string; penaltyRate: string; estimatedRefund: string; estimateNotice: string };
 };
 
-const localeMap: Record<Locale, string> = { ko: 'ko-KR', en: 'en-US', ja: 'ja-JP', 'zh-CN': 'zh-CN' };
+const localeMap: Record<Locale, string> = { en: 'en-US', ko: 'ko-KR', 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', ja: 'ja-JP', th: 'th-TH', vi: 'vi-VN', ru: 'ru-RU' };
 
 export function PricingPolicySection({ copy, pricing, checkIn, locale }: { copy: PricingCopy; pricing: { nights: StayNight[]; totalAmount: number }; checkIn: string; locale: Locale }) {
   const today = getTodayDateString();

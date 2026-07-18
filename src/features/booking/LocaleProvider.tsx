@@ -9,12 +9,18 @@ type LocaleContextValue = { locale: Locale; setLocale: (locale: Locale) => void;
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function resolveLocale(value: string | undefined | null): Locale {
-  if (!value) return defaultLocale;
-  if ((locales as readonly string[]).includes(value)) return value as Locale;
-  if (value.startsWith('ko')) return 'ko';
-  if (value.startsWith('en')) return 'en';
-  if (value.startsWith('ja')) return 'ja';
-  if (value.startsWith('zh')) return 'zh-CN';
+  const normalized = value?.trim();
+  if (!normalized) return defaultLocale;
+  if ((locales as readonly string[]).includes(normalized)) return normalized as Locale;
+  const lower = normalized.toLowerCase();
+  if (lower.startsWith('en')) return 'en';
+  if (lower.startsWith('ko')) return 'ko';
+  if (lower.startsWith('ja')) return 'ja';
+  if (lower === 'zh-tw' || lower === 'zh-hk' || lower === 'zh-mo' || lower.includes('hant')) return 'zh-TW';
+  if (lower === 'zh-cn' || lower === 'zh-sg' || lower.includes('hans')) return 'zh-CN';
+  if (lower.startsWith('th')) return 'th';
+  if (lower.startsWith('vi')) return 'vi';
+  if (lower.startsWith('ru')) return 'ru';
   return defaultLocale;
 }
 
@@ -25,7 +31,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     setLocaleState(resolveLocale(stored ?? window.navigator.language));
   }, []);
   useEffect(() => { document.documentElement.lang = locale; window.localStorage.setItem(storageKey, locale); }, [locale]);
-  const value = useMemo(() => ({ locale, setLocale: setLocaleState, t: messages[locale] }), [locale]);
+  const value = useMemo(() => ({ locale, setLocale: setLocaleState, t: messages[locale] ?? messages.en }), [locale]);
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }
 

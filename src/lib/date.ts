@@ -72,10 +72,14 @@ export function formatDateForLocale(value: string, locale: Locale): string {
   if (!parsed) return value;
 
   const localeMap: Record<Locale, string> = {
-    ko: 'ko-KR',
     en: 'en-US',
+    ko: 'ko-KR',
+    'zh-CN': 'zh-CN',
+    'zh-TW': 'zh-TW',
     ja: 'ja-JP',
-    'zh-CN': 'zh-CN'
+    th: 'th-TH-u-ca-gregory',
+    vi: 'vi-VN',
+    ru: 'ru-RU'
   };
 
   return new Intl.DateTimeFormat(localeMap[locale], {

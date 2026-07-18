@@ -5,7 +5,7 @@ import type { Locale } from '@/locales/messages';
 type PaymentCopy = { title: string; roomCharge: string; extraCharge: string; total: string; paypal: string; disabledNotice: string };
 type PricingCopy = { low: string; mid: string; high: string; rateDetails: string; selectDatesFirst: string; lowReason: string; midReason: string; highReason: string };
 
-const localeMap: Record<Locale, string> = { ko: 'ko-KR', en: 'en-US', ja: 'ja-JP', 'zh-CN': 'zh-CN' };
+const localeMap: Record<Locale, string> = { en: 'en-US', ko: 'ko-KR', 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', ja: 'ja-JP', th: 'th-TH', vi: 'vi-VN', ru: 'ru-RU' };
 const rateLabel = (rate: RateType, copy: PricingCopy) => ({ low: copy.low, mid: copy.mid, high: copy.high })[rate];
 const rateReason = (rate: RateType, copy: PricingCopy) => ({ low: copy.lowReason, mid: copy.midReason, high: copy.highReason })[rate];
 

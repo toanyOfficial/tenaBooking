@@ -6,7 +6,7 @@ import type { Locale } from '@/locales/messages';
 type Copy = { type: string };
 type PaymentCopy = { roomCharge: string; extraCharge: string; total: string };
 type BookingCopy = { nights: string; oneNight: string };
-const localeMap: Record<Locale, string> = { ko: 'ko-KR', en: 'en-US', ja: 'ja-JP', 'zh-CN': 'zh-CN' };
+const localeMap: Record<Locale, string> = { en: 'en-US', ko: 'ko-KR', 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', ja: 'ja-JP', th: 'th-TH', vi: 'vi-VN', ru: 'ru-RU' };
 
 export function BookingSummary({ summary, roomCopy, paymentCopy, bookingCopy, locale }: { summary: BookingSummaryType; roomCopy: Copy; paymentCopy: PaymentCopy; bookingCopy: BookingCopy; locale: Locale }) {
   const nightsLabel = summary.nights === 1 ? bookingCopy.oneNight : bookingCopy.nights.replace('{count}', String(summary.nights));
