@@ -7,7 +7,6 @@ import { RoomGallery } from '@/components/RoomGallery';
 import { RoomSummary } from '@/components/RoomSummary';
 import { AmenitiesSection } from '@/features/booking/AmenitiesSection';
 import { BookingFlow } from '@/features/booking/BookingFlow';
-import { GuideSection } from '@/features/booking/GuideSection';
 import { StayGuideSection } from '@/features/booking/StayGuideSection';
 import { useLocale } from '@/features/booking/LocaleProvider';
 import { roomAmenities, standardRoomImages } from '@/features/booking/roomData';
@@ -20,12 +19,11 @@ export function AppContent({ holidays }: { holidays: Holiday[] }) {
     <>
       <Header copy={t.header} />
       <main id="top" className={styles.shell}>
-        <BookingFlow locale={locale} copy={{ booking: t.booking, payment: t.payment, pricing: t.pricing, room: t.room }} holidays={holidays} />
+        <BookingFlow locale={locale} copy={{ booking: t.booking, payment: t.payment, pricing: t.pricing, room: t.room, guide: t.guide }} holidays={holidays} />
         <RoomGallery images={standardRoomImages} copy={t.room} />
         <RoomSummary copy={t.room} />
         <AmenitiesSection copy={t.amenities} amenities={roomAmenities} />
         <StayGuideSection copy={t.stayGuide} />
-        <GuideSection copy={t.guide} />
         <ContactSection copy={t.contact} />
         <BusinessInfo copy={t.business} locale={locale} />
       </main>

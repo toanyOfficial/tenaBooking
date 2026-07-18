@@ -8,7 +8,7 @@ export function PaymentCTA({ copy, totalAmount = 0, locale = 'ko', disabled = tr
   return (
     <aside className={visible ? 'paymentCta isVisible' : 'paymentCta'} aria-label={copy.paypal} aria-hidden={!visible}>
       <div><span>{copy.stickyTotalLabel}</span><strong>{formatWon(totalAmount, localeMap[locale])}</strong></div>
-      <button className="primaryButton" type="button" disabled={disabled} onClick={onClick}>{label ?? copy.paypal}</button>
+      <button className="paypalButton" type="button" disabled={disabled} onClick={onClick}><span className="paypalMark" aria-hidden="true">P</span><span>{label ?? copy.paypal}</span></button>
     </aside>
   );
 }

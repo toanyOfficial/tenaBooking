@@ -439,6 +439,70 @@ button {
   opacity: 0.72;
 }
 
+
+.paypalButton {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #f2c94c;
+  border-radius: 999px;
+  background: #ffc439;
+  color: #003087;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.paypalButton:hover:not(:disabled) {
+  background: #f2bb30;
+}
+
+.paypalButton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.paypalButton:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.25);
+  opacity: 0.72;
+}
+
+.paypalMark {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 999px;
+  background: #003087;
+  color: #ffc439;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.modalCloseOnly {
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.completionSheet {
+  text-align: center;
+}
+
+.completionSheet .modalTitleRow {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.guideSheet .card {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
 .fullWidth {
   width: 100%;
   margin-top: 18px;

@@ -8,6 +8,7 @@ import { PayPalPaymentButton } from '@/components/PayPalPaymentButton';
 import { BookingDateSection } from '@/components/BookingDateSection';
 import { PaymentSummary } from '@/features/booking/PaymentSummary';
 import { PricingPolicySection } from '@/features/booking/PricingPolicySection';
+import { GuideSection } from '@/features/booking/GuideSection';
 import { createBookingSummary } from '@/features/booking/bookingSummary';
 import { calculateStayPricing, formatWon } from '@/features/booking/pricing';
 import type { Holiday } from '@/features/booking/types/holiday';
@@ -24,7 +25,8 @@ type BookingFlowProps = {
   locale: Locale;
   copy: {
     booking: Parameters<typeof BookingDateSection>[0]['copy'];
-    payment: { paypal: string; total: string; stickyTotalLabel: string; selectDates: string; calculating: string; checkSchedule: string; creating: string; redirecting: string; error: string; mockNotice: string; confirmation: Parameters<typeof PaymentConfirmationSheet>[0]['copy'] };
+    payment: { paypal: string; total: string; stickyTotalLabel: string; selectDates: string; calculating: string; checkSchedule: string; creating: string; redirecting: string; error: string; mockNotice: string; completionTitle: string; viewGuide: string; confirmation: Parameters<typeof PaymentConfirmationSheet>[0]['copy'] };
+    guide: Parameters<typeof GuideSection>[0]['copy'];
     pricing: Parameters<typeof PricingPolicySection>[0]['copy'] & Parameters<typeof PaymentSummary>[0]['pricingCopy'];
     room: { type: string };
   };
@@ -37,6 +39,8 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
   const [statusMessage, setStatusMessage] = useState('');
   const [showStickyPayment, setShowStickyPayment] = useState(false);
   const [policyOpen, setPolicyOpen] = useState(false);
+  const [paymentCompleteOpen, setPaymentCompleteOpen] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
   const primaryPaymentRef = useRef<HTMLDivElement>(null);
   const pricing = useMemo(() => calculateStayPricing(dates.checkIn, dates.checkOut, holidays), [dates.checkIn, dates.checkOut, holidays]);
   const summary = useMemo(() => createBookingSummary({ roomType: 'standard', checkIn: dates.checkIn, checkOut: dates.checkOut, stayNights: pricing.nights }), [dates.checkIn, dates.checkOut, pricing.nights]);
@@ -60,7 +64,7 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
       const response = await fetch('/api/paypal/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ roomType: 'standard', checkIn: summary.checkIn, checkOut: summary.checkOut }) });
       const data = await response.json() as CreatePayPalOrderResponse;
       if (!data.success) throw new Error('create-order-failed');
-      if (data.mode === 'mock') { setPaymentState('idle'); setStatusMessage(copy.payment.mockNotice); return; }
+      if (data.mode === 'mock') { setPaymentState('idle'); setStatusMessage(''); setPaymentCompleteOpen(true); return; }
       setPaymentState('redirecting');
       setStatusMessage(copy.payment.redirecting);
       window.location.assign(data.approvalUrl);
@@ -88,6 +92,23 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
           <section className="paymentSheet policySheet" role="dialog" aria-modal="true" aria-labelledby="policy-modal-title" onClick={(event) => event.stopPropagation()}>
             <div className="modalTitleRow"><h2 id="policy-modal-title">{copy.pricing.title}</h2><button type="button" className="policyCloseButton" aria-label={copy.payment.confirmation.cancel} onClick={() => setPolicyOpen(false)}>×</button></div>
             <PricingPolicySection copy={copy.pricing} pricing={pricing} checkIn={dates.checkIn} locale={locale} />
+          </section>
+        </div>
+      ) : null}
+
+      {paymentCompleteOpen ? (
+        <div className="sheetBackdrop policyBackdrop" onClick={() => setPaymentCompleteOpen(false)}>
+          <section className="paymentSheet completionSheet" role="dialog" aria-modal="true" aria-labelledby="payment-complete-title" onClick={(event) => event.stopPropagation()}>
+            <div className="modalTitleRow"><h2 id="payment-complete-title">{copy.payment.completionTitle}</h2><button type="button" className="policyCloseButton" aria-label={copy.payment.confirmation.cancel} onClick={() => setPaymentCompleteOpen(false)}>×</button></div>
+            <button type="button" className="primaryButton fullWidth" onClick={() => { setPaymentCompleteOpen(false); setGuideOpen(true); }}>{copy.payment.viewGuide}</button>
+          </section>
+        </div>
+      ) : null}
+      {guideOpen ? (
+        <div className="sheetBackdrop policyBackdrop" onClick={() => setGuideOpen(false)}>
+          <section className="paymentSheet guideSheet" role="dialog" aria-modal="true" aria-labelledby="guide-title" onClick={(event) => event.stopPropagation()}>
+            <div className="modalTitleRow modalCloseOnly"><button type="button" className="policyCloseButton" aria-label={copy.payment.confirmation.cancel} onClick={() => setGuideOpen(false)}>×</button></div>
+            <GuideSection copy={copy.guide} />
           </section>
         </div>
       ) : null}
