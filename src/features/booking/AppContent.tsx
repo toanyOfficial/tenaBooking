@@ -20,9 +20,9 @@ export function AppContent({ holidays }: { holidays: Holiday[] }) {
     <>
       <Header copy={t.header} />
       <main id="top" className={styles.shell}>
+        <BookingFlow locale={locale} copy={{ booking: t.booking, payment: t.payment, pricing: t.pricing, room: t.room }} holidays={holidays} />
         <RoomGallery images={standardRoomImages} copy={t.room} />
         <RoomSummary copy={t.room} featuredAmenities={featuredAmenities} amenityLabels={t.amenities.items} />
-        <BookingFlow locale={locale} copy={{ booking: t.booking, payment: t.payment, pricing: t.pricing, room: t.room }} holidays={holidays} />
         <AmenitiesSection copy={t.amenities} amenities={roomAmenities} />
         <GuideSection copy={t.guide} />
         <ContactSection copy={t.contact} />

@@ -1076,3 +1076,167 @@ button {
   color: var(--color-gold-dark);
   font-weight: 800;
 }
+
+.bookingHero {
+  border-color: rgba(180, 154, 104, 0.34);
+}
+
+.dateCard {
+  border: 1px solid var(--color-border);
+}
+
+.dateCard:hover:not(:disabled) {
+  border-color: var(--color-gold-dark);
+}
+
+.calendarOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  align-items: end;
+  padding: 16px 12px calc(16px + env(safe-area-inset-bottom));
+  background: rgba(31, 29, 25, 0.28);
+}
+
+.calendarDialog {
+  width: min(100%, 520px);
+  max-height: min(82svh, 720px);
+  overflow-y: auto;
+  margin: 0 auto;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px 18px 14px 14px;
+  background: var(--color-surface);
+  box-shadow: 0 18px 44px rgba(31, 29, 25, 0.16);
+}
+
+.calendarHeader {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.calendarHeader button {
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-size: 1.4rem;
+}
+
+.calendarHeader strong {
+  text-align: center;
+}
+
+.calendarMonths {
+  display: grid;
+  gap: 16px;
+}
+
+.calendarMonth h3 {
+  margin: 0 0 8px;
+  font-size: 0.96rem;
+}
+
+.calendarWeekdays,
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendarWeekdays span {
+  padding: 6px 0;
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.calendarGrid button {
+  position: relative;
+  min-width: 0;
+  min-height: 42px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.calendarGrid button span {
+  position: relative;
+  z-index: 1;
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 999px;
+}
+
+.calendarGrid button.rangeInside::before,
+.calendarGrid button.rangeStart::before,
+.calendarGrid button.rangeEnd::before {
+  position: absolute;
+  top: 7px;
+  right: 0;
+  bottom: 7px;
+  left: 0;
+  content: '';
+  background: var(--color-gold-light);
+}
+
+.calendarGrid button.rangeStart::before { left: 50%; }
+.calendarGrid button.rangeEnd::before { right: 50%; }
+.calendarGrid button.rangeStart span,
+.calendarGrid button.rangeEnd span {
+  background: var(--color-gold);
+  color: var(--color-surface);
+  font-weight: 900;
+}
+
+.calendarGrid button.rangeInside span {
+  color: var(--color-gold-dark);
+  font-weight: 800;
+}
+
+.calendarGrid button.mutedDay { color: var(--color-text-secondary); opacity: 0.48; }
+.calendarGrid button:disabled { cursor: not-allowed; opacity: 0.34; }
+.calendarGrid button:focus-visible span { outline: 2px solid var(--color-gold-dark); outline-offset: 2px; }
+
+.languageMenuButton span:not(.languageIconSlot),
+.languageOptions button span:not(.languageIconSlot) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.languageIconSlot {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-background);
+}
+
+.languageIconSlot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.languageOptions button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+@media (min-width: 768px) {
+  .calendarOverlay { align-items: center; }
+  .calendarMonths { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

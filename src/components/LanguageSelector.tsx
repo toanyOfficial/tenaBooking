@@ -5,7 +5,13 @@ import { useLocale } from '@/features/booking/LocaleProvider';
 import type { Locale } from '@/locales/messages';
 
 const labels: Record<Locale, string> = { en: 'English', ko: '한국어', 'zh-CN': '简体中文', 'zh-TW': '繁體中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt', ru: 'Русский' };
+const languageIcons: Record<Locale, string | null> = { en: null, ko: null, 'zh-CN': null, 'zh-TW': null, ja: null, th: null, vi: null, ru: null };
 const options = Object.keys(labels) as Locale[];
+
+function LanguageIconSlot({ locale }: { locale: Locale }) {
+  const icon = languageIcons[locale];
+  return <span className="languageIconSlot" aria-hidden="true">{icon ? <img src={icon} alt="" /> : null}</span>;
+}
 
 export function LanguageSelector() {
   const { locale, setLocale, t } = useLocale();
@@ -21,8 +27,8 @@ export function LanguageSelector() {
   }, []);
   return (
     <div className="languageMenu" ref={rootRef}>
-      <button ref={buttonRef} type="button" className="languageMenuButton" aria-haspopup="listbox" aria-expanded={open} aria-label={`${t.header.languageLabel}: ${labels[locale]}`} onClick={() => setOpen((value) => !value)}>{labels[locale]}<span aria-hidden="true">⌄</span></button>
-      {open ? <div className="languageOptions" role="listbox" aria-label={t.header.languageLabel}>{options.map((option) => <button type="button" role="option" aria-selected={option === locale} aria-current={option === locale ? 'true' : undefined} key={option} onClick={() => { setLocale(option); setOpen(false); buttonRef.current?.focus(); }}>{labels[option]}</button>)}</div> : null}
+      <button ref={buttonRef} type="button" className="languageMenuButton" aria-haspopup="listbox" aria-expanded={open} aria-label={`${t.header.languageLabel}: ${labels[locale]}`} onClick={() => setOpen((value) => !value)}><LanguageIconSlot locale={locale} /><span>{labels[locale]}</span><span aria-hidden="true">⌄</span></button>
+      {open ? <div className="languageOptions" role="listbox" aria-label={t.header.languageLabel}>{options.map((option) => <button type="button" role="option" aria-selected={option === locale} aria-current={option === locale ? 'true' : undefined} key={option} onClick={() => { setLocale(option); setOpen(false); buttonRef.current?.focus(); }}><LanguageIconSlot locale={option} /><span>{labels[option]}</span></button>)}</div> : null}
     </div>
   );
 }
