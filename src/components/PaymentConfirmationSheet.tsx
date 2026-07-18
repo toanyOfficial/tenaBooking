@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useRef } from 'react';
 import { BookingSummary } from '@/components/BookingSummary';
+import { PayPalPaymentButton } from '@/components/PayPalPaymentButton';
 import type { BookingSummary as BookingSummaryType } from '@/features/booking/bookingSummary';
 import type { Locale } from '@/locales/messages';
 
@@ -37,7 +38,7 @@ export function PaymentConfirmationSheet({ open, summary, locale, copy, roomCopy
         <p className="helperText refundAgreementText">{highlightRefundPolicy(copy.refundAgreement)}</p>
         <div className="sheetActions">
           <button ref={closeButtonRef} type="button" className="secondaryButton" onClick={onClose} disabled={busy}>{copy.cancel}</button>
-          <button type="button" className="primaryButton" onClick={onContinue} disabled={busy}>{copy.continue}</button>
+          <PayPalPaymentButton label={copy.continue} disabled={busy} onClick={onContinue} />
         </div>
       </section>
     </div>
