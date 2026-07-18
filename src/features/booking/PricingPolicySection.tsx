@@ -15,9 +15,13 @@ const localeMap: Record<Locale, string> = { en: 'en-US', ko: 'ko-KR', 'zh-CN': '
 
 export function PricingPolicySection({ copy, pricing, checkIn, locale }: { copy: PricingCopy; pricing: { nights: StayNight[]; totalAmount: number }; checkIn: string; locale: Locale }) {
   const today = getTodayDateString();
-  const penaltyRate = checkIn && pricing.totalAmount ? getCancellationPenaltyRate(checkIn, today) : null;
+  const penaltyRate = checkIn && pricing.totalAmount > 0 ? getCancellationPenaltyRate(checkIn, today) : null;
   const refund = penaltyRate === null ? null : calculateRefund(pricing.totalAmount, penaltyRate);
   const daysBefore = checkIn ? getDaysBeforeCheckIn(checkIn, today) : null;
+  const refundEstimate =
+    checkIn && pricing.totalAmount > 0 && penaltyRate !== null && daysBefore !== null && refund !== null
+      ? { daysBefore, penaltyRate, refund }
+      : null;
 
   return (
     <section className="card" aria-labelledby="policy-title">
@@ -39,13 +43,13 @@ export function PricingPolicySection({ copy, pricing, checkIn, locale }: { copy:
           {copy.refunds.map((refundRow) => (<div key={refundRow.period}><dt>{refundRow.period}</dt><dd>{refundRow.penalty}</dd></div>))}
         </dl>
       </div>
-      {refund && daysBefore !== null ? (
+      {refundEstimate ? (
         <aside className="refundEstimate" aria-live="polite">
           <h3>{copy.refund.cancelToday}</h3>
           <dl>
-            <div><dt>{copy.refund.daysBeforeCheckIn}</dt><dd>{Math.max(daysBefore, 0)}</dd></div>
-            <div><dt>{copy.refund.penaltyRate}</dt><dd>{Math.round(penaltyRate * 100)}%</dd></div>
-            <div><dt>{copy.refund.estimatedRefund}</dt><dd>{formatWon(refund.refundAmount, localeMap[locale])}</dd></div>
+            <div><dt>{copy.refund.daysBeforeCheckIn}</dt><dd>{Math.max(refundEstimate.daysBefore, 0)}</dd></div>
+            <div><dt>{copy.refund.penaltyRate}</dt><dd>{Math.round(refundEstimate.penaltyRate * 100)}%</dd></div>
+            <div><dt>{copy.refund.estimatedRefund}</dt><dd>{formatWon(refundEstimate.refund.refundAmount, localeMap[locale])}</dd></div>
           </dl>
           <p>{copy.refund.estimateNotice}</p>
         </aside>
