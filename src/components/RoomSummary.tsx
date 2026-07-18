@@ -10,6 +10,7 @@ type RoomSummaryCopy = {
   checkOutLabel: string;
   checkOut: string;
   independence: { title: string; description: string };
+  uniformRoom: { title: string; description: string };
 };
 
 export function RoomSummary({ copy }: { copy: RoomSummaryCopy }) {
@@ -19,6 +20,7 @@ export function RoomSummary({ copy }: { copy: RoomSummaryCopy }) {
       <p>{copy.description}</p>
       <StayTimeInfo title={copy.stayTimeTitle} checkInLabel={copy.checkInLabel} checkIn={copy.checkIn} checkOutLabel={copy.checkOutLabel} checkOut={copy.checkOut} />
       <IndependentStayNotice title={copy.independence.title} description={copy.independence.description} />
+      <IndependentStayNotice title={copy.uniformRoom.title} description={copy.uniformRoom.description} />
     </section>
   );
 }

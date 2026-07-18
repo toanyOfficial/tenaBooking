@@ -1,6 +1,5 @@
 'use client';
 
-import { BusinessInfo } from '@/components/BusinessInfo';
 import { ContactSection } from '@/components/ContactSection';
 import { Header } from '@/components/Header';
 import { RoomGallery } from '@/components/RoomGallery';
@@ -25,7 +24,6 @@ export function AppContent({ holidays }: { holidays: Holiday[] }) {
         <AmenitiesSection copy={t.amenities} amenities={roomAmenities} />
         <StayGuideSection copy={t.stayGuide} />
         <ContactSection copy={t.contact} />
-        <BusinessInfo copy={t.business} locale={locale} />
       </main>
     </>
   );

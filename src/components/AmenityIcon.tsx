@@ -13,7 +13,8 @@ const paths: Record<AmenityIconName, React.ReactNode> = {
   wifi: <><path d="M5 9a11 11 0 0 1 14 0" /><path d="M8 12a6 6 0 0 1 8 0" /><path d="M11 16h2" /></>,
   fridge: <><rect x="7" y="3" width="10" height="18" rx="2" /><path d="M7 10h10" /><path d="M10 7h1" /><path d="M10 14h1" /></>,
   cookware: <><path d="M5 14h11a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z" /><path d="M16 14h3" /><path d="M8 6v4" /><path d="M12 5v5" /></>,
-  tableware: <><path d="M7 4v16" /><path d="M5 4v5a2 2 0 0 0 4 0V4" /><path d="M16 4v16" /><path d="M14 4h4v8h-4z" /></>
+  tableware: <><path d="M7 4v16" /><path d="M5 4v5a2 2 0 0 0 4 0V4" /><path d="M16 4v16" /><path d="M14 4h4v8h-4z" /></>,
+  doorlock: <><rect x="7" y="4" width="10" height="16" rx="2" /><path d="M10 8h4" /><path d="M12 12h.01" /><path d="M10 16h4" /></>
 };
 
 export function AmenityIcon({ name }: { name: AmenityIconName }) {

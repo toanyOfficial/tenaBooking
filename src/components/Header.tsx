@@ -5,8 +5,8 @@ type HeaderCopy = { brandPrefix: string; brandAccent: string };
 export function Header({ copy }: { copy: HeaderCopy }) {
   return (
     <header className="appHeader">
-      <a className="brand" href="#top" aria-label={`${copy.brandPrefix} ${copy.brandAccent}`}>
-        <span>{copy.brandPrefix}</span><strong>{copy.brandAccent}</strong>
+      <a className="brand" href="#top" aria-label={`${copy.brandAccent} ${copy.brandPrefix}`}>
+        <strong>{copy.brandAccent}</strong><span>{copy.brandPrefix}</span>
       </a>
       <LanguageSelector />
     </header>

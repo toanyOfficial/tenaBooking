@@ -18,9 +18,10 @@ export type AmenityKey =
   | 'wifi'
   | 'refrigerator'
   | 'cookware'
-  | 'tableware';
+  | 'tableware'
+  | 'digitalDoorLock';
 
-export type AmenityIcon = 'bed' | 'bath' | 'toilet' | 'sink' | 'cooktop' | 'washer' | 'air' | 'heat' | 'water' | 'wifi' | 'fridge' | 'cookware' | 'tableware';
+export type AmenityIcon = 'bed' | 'bath' | 'toilet' | 'sink' | 'cooktop' | 'washer' | 'air' | 'heat' | 'water' | 'wifi' | 'fridge' | 'cookware' | 'tableware' | 'doorlock';
 
 export type Amenity = {
   id: AmenityKey;
@@ -32,7 +33,6 @@ export const standardRoomImages: RoomImage[] = [
   { id: 'bedroom', src: '/images/room/standard-01.svg' },
   { id: 'kitchen', src: '/images/room/standard-02.svg' },
   { id: 'bathroom', src: '/images/room/standard-03.svg' },
-  { id: 'laundry', src: '/images/room/standard-04.svg' },
   { id: 'overview', src: '/images/room/standard-05.svg' }
 ];
 
@@ -49,5 +49,6 @@ export const roomAmenities: Amenity[] = [
   { id: 'wifi', icon: 'wifi', featured: true },
   { id: 'refrigerator', icon: 'fridge' },
   { id: 'cookware', icon: 'cookware' },
-  { id: 'tableware', icon: 'tableware' }
+  { id: 'tableware', icon: 'tableware' },
+  { id: 'digitalDoorLock', icon: 'doorlock' }
 ];
