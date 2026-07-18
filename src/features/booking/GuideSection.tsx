@@ -5,7 +5,7 @@ import { useState } from 'react';
 type GuideCopy = { title: string; importantTitle: string; importantDescription: string; items: Array<{ title: string; description: string }> };
 
 export function GuideSection({ copy, hideTitle = false }: { copy: GuideCopy; hideTitle?: boolean }) {
-  const [openIndex, setOpenIndex] = useState(0);
+  const [openIndex, setOpenIndex] = useState(-1);
   return (
     <section className="card guideSectionCard" aria-labelledby="guide-title">
       {hideTitle ? <span id="guide-title" className="srOnly">{copy.title}</span> : <h2 id="guide-title">{copy.title}</h2>}
