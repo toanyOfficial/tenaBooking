@@ -21,6 +21,7 @@ type BookingCopy = {
   invalidDateError: string;
   checkOutAfterCheckInError: string;
   checkInPastError: string;
+  policyActionLabel: string;
 };
 
 export type BookingDateState = { checkIn: string; checkOut: string };
@@ -57,7 +58,7 @@ function getInitialMonth(checkIn: string, today: string) {
   return new Date(Date.UTC(parsed?.year ?? new Date().getUTCFullYear(), (parsed?.month ?? 1) - 1, 1));
 }
 
-export function BookingDateSection({ copy, locale, value, onChange }: { copy: BookingCopy; locale: Locale; value: BookingDateState; onChange: (value: BookingDateState) => void }) {
+export function BookingDateSection({ copy, locale, value, onChange, policyActionLabel, onPolicyAction }: { copy: BookingCopy; locale: Locale; value: BookingDateState; onChange: (value: BookingDateState) => void; policyActionLabel?: string; onPolicyAction?: () => void }) {
   const dates = value;
   const today = useMemo(() => getTodayDateString(), []);
   const [open, setOpen] = useState(false);
@@ -148,7 +149,10 @@ export function BookingDateSection({ copy, locale, value, onChange }: { copy: Bo
 
   return (
     <section className="card bookingHero" aria-labelledby="booking-title">
-      <h2 id="booking-title">{copy.title}</h2>
+      <div className="bookingHeaderRow">
+        <h2 id="booking-title">{copy.title}</h2>
+        {policyActionLabel && onPolicyAction ? <button type="button" className="policyLinkButton" onClick={onPolicyAction}>{policyActionLabel}</button> : null}
+      </div>
       <div className="dateGrid">
         <button ref={openButtonRef} type="button" className="dateCard" aria-label={`${copy.checkInLabel}: ${formattedCheckIn}`} onClick={openCalendar}>
           <span>{copy.checkInLabel}</span><strong>{formattedCheckIn}</strong>

@@ -1292,3 +1292,43 @@ button {
   color: var(--color-danger);
   font-weight: 800;
 }
+
+.bookingHeaderRow,
+.modalTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.policyLinkButton {
+  min-height: 40px;
+  flex: 0 0 auto;
+  padding: 0 12px;
+  border: 1px solid rgba(180, 154, 104, 0.38);
+  border-radius: 999px;
+  background: var(--color-gold-light);
+  color: var(--color-gold-dark);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.refundKeyword,
+.refundAgreementText {
+  color: var(--color-danger);
+  font-weight: 900;
+}
+
+.paymentSheet .card {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+@media (max-width: 360px) {
+  .bookingHeaderRow,
+  .modalTitleRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

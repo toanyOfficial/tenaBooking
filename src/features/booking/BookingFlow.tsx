@@ -36,6 +36,7 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
   const [paymentState, setPaymentState] = useState<PaymentState>('idle');
   const [statusMessage, setStatusMessage] = useState('');
   const [showStickyPayment, setShowStickyPayment] = useState(false);
+  const [policyOpen, setPolicyOpen] = useState(false);
   const primaryPaymentRef = useRef<HTMLDivElement>(null);
   const pricing = useMemo(() => calculateStayPricing(dates.checkIn, dates.checkOut, holidays), [dates.checkIn, dates.checkOut, holidays]);
   const summary = useMemo(() => createBookingSummary({ roomType: 'standard', checkIn: dates.checkIn, checkOut: dates.checkOut, stayNights: pricing.nights }), [dates.checkIn, dates.checkOut, pricing.nights]);
@@ -71,18 +72,25 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
 
   return (
     <>
-      <BookingDateSection copy={copy.booking} locale={locale} value={dates} onChange={setDates} />
+      <BookingDateSection copy={copy.booking} locale={locale} value={dates} onChange={setDates} policyActionLabel={copy.booking.policyActionLabel} onPolicyAction={() => setPolicyOpen(true)} />
       <div className="bookingQuickTotal" aria-live="polite">
         <span>{summary ? formatNightCount(summary.nights, copy.booking) : copy.booking.nightsValue}</span>
         <strong>{formatWon(pricing.totalAmount, localeMap[locale])}</strong>
       </div>
       <div ref={primaryPaymentRef}>
-        <PayPalPaymentButton label={buttonLabel} disabled={!canPay} onClick={() => setPaymentState('confirming')} describedBy="payment-status" />
+        <PayPalPaymentButton label={buttonLabel} disabled={!canPay} onClick={() => setPaymentState('confirming')} describedBy={statusMessage ? "payment-status" : undefined} />
       </div>
       <PaymentSummary pricingCopy={copy.pricing} bookingCopy={copy.booking} pricing={pricing} locale={locale} />
-      <div id="payment-status"><PaymentStatusMessage message={statusMessage || disabledMessage} tone={paymentState === 'error' ? 'error' : statusMessage === copy.payment.mockNotice ? 'success' : 'neutral'} /></div>
-      <PricingPolicySection copy={copy.pricing} pricing={pricing} checkIn={dates.checkIn} locale={locale} />
+      {statusMessage ? <div id="payment-status"><PaymentStatusMessage message={statusMessage} tone={paymentState === 'error' ? 'error' : statusMessage === copy.payment.mockNotice ? 'success' : 'neutral'} /></div> : null}
       <PaymentCTA copy={copy.payment} totalAmount={pricing.totalAmount} locale={locale} disabled={!canPay} visible={showStickyPayment} onClick={() => setPaymentState('confirming')} label={buttonLabel} />
+      {policyOpen ? (
+        <div className="sheetBackdrop" onClick={() => setPolicyOpen(false)}>
+          <section className="paymentSheet" role="dialog" aria-modal="true" aria-labelledby="policy-modal-title" onClick={(event) => event.stopPropagation()}>
+            <div className="modalTitleRow"><h2 id="policy-modal-title">{copy.pricing.title}</h2><button type="button" className="secondaryButton" onClick={() => setPolicyOpen(false)}>{copy.payment.confirmation.cancel}</button></div>
+            <PricingPolicySection copy={copy.pricing} pricing={pricing} checkIn={dates.checkIn} locale={locale} />
+          </section>
+        </div>
+      ) : null}
       <PaymentConfirmationSheet open={paymentState === 'confirming'} summary={summary} locale={locale} copy={copy.payment.confirmation} roomCopy={copy.room} paymentCopy={copy.payment} bookingCopy={copy.booking} onClose={() => setPaymentState('idle')} onContinue={requestPayment} busy={paymentState === 'creating'} />
     </>
   );
