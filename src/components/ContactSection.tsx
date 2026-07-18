@@ -3,8 +3,8 @@ type ContactCopy = { title: string; notice: string; unavailable: string; items: 
 export function ContactSection({ copy }: { copy: ContactCopy }) {
   return (
     <section className="card" aria-labelledby="contact-title">
-      <h2 id="contact-title">{copy.title}</h2>
-      <button type="button" className="contactButton contactSingleButton" disabled>{copy.title}</button>
+      <h2 id="contact-title" className="srOnly">{copy.title}</h2>
+      <button type="button" className="contactButton contactSingleButton">{copy.title}</button>
       <p className="helperText">{copy.notice}</p>
     </section>
   );

@@ -625,6 +625,12 @@ button {
   color: var(--color-text-secondary);
 }
 
+.contactSingleButton {
+  width: 100%;
+  justify-content: center;
+  font-weight: 800;
+}
+
 .businessInfo {
   color: var(--color-text-secondary);
   font-size: 0.82rem;
