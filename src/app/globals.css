@@ -1025,12 +1025,31 @@ button {
 }
 
 .secondaryButton {
+  display: inline-flex;
+  width: 100%;
   min-height: 52px;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: 999px;
   background: var(--color-surface);
   color: var(--color-text-primary);
   font-weight: 800;
+  line-height: 1.1;
+}
+
+.secondaryButton:hover:not(:disabled) {
+  border-color: rgba(180, 154, 104, 0.52);
+  background: var(--color-gold-light);
+}
+
+.secondaryButton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
 }
 
 @media (max-width: 340px) {
