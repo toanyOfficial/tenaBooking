@@ -6,14 +6,14 @@ import type { Locale } from '@/locales/messages';
 
 const labels: Record<Locale, string> = { en: 'English', ko: '한국어', 'zh-CN': '简体中文', 'zh-TW': '繁體中文', ja: '日本語', th: 'ไทย', vi: 'Tiếng Việt', ru: 'Русский' };
 const languageIcons: Record<Locale, string> = {
-  en: '/images/languages/en.svg',
-  ko: '/images/languages/ko.svg',
-  'zh-CN': '/images/languages/zh-CN.svg',
-  'zh-TW': '/images/languages/zh-TW.svg',
-  ja: '/images/languages/ja.svg',
-  th: '/images/languages/th.svg',
-  vi: '/images/languages/vi.svg',
-  ru: '/images/languages/ru.svg'
+  en: '/images/languages/en.png',
+  ko: '/images/languages/ko.png',
+  'zh-CN': '/images/languages/zh-CN.png',
+  'zh-TW': '/images/languages/zh-TW.png',
+  ja: '/images/languages/ja.png',
+  th: '/images/languages/th.png',
+  vi: '/images/languages/vi.png',
+  ru: '/images/languages/ru.png'
 };
 const options = Object.keys(labels) as Locale[];
 
