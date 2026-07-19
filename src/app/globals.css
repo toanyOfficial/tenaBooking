@@ -1353,9 +1353,21 @@ button {
 }
 
 .languageMenuChevron {
-  display: inline-flex;
-  align-items: center;
-  line-height: 1;
+  display: inline-grid;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  place-items: center;
+  line-height: 0;
+}
+
+.languageMenuChevron::before {
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  content: '';
+  transform: rotate(45deg);
 }
 
 .languageIconSlot {
