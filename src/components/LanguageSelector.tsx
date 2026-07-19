@@ -36,7 +36,7 @@ export function LanguageSelector() {
   }, []);
   return (
     <div className="languageMenu" ref={rootRef}>
-      <button ref={buttonRef} type="button" className="languageMenuButton" aria-haspopup="listbox" aria-expanded={open} aria-label={`${t.header.languageLabel}: ${labels[locale]}`} onClick={() => setOpen((value) => !value)}><LanguageIconSlot locale={locale} /><span>{labels[locale]}</span><span className="languageMenuChevron" aria-hidden="true">⌄</span></button>
+      <button ref={buttonRef} type="button" className="languageMenuButton" aria-haspopup="listbox" aria-expanded={open} aria-label={`${t.header.languageLabel}: ${labels[locale]}`} onClick={() => setOpen((value) => !value)}><LanguageIconSlot locale={locale} /><span>{labels[locale]}</span><span className="languageMenuChevron" aria-hidden="true" /></button>
       {open ? <div className="languageOptions" role="listbox" aria-label={t.header.languageLabel}>{options.map((option) => <button type="button" role="option" aria-selected={option === locale} aria-current={option === locale ? 'true' : undefined} key={option} onClick={() => { setLocale(option); setOpen(false); buttonRef.current?.focus(); }}><LanguageIconSlot locale={option} /><span>{labels[option]}</span></button>)}</div> : null}
     </div>
   );
