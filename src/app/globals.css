@@ -8,6 +8,7 @@
   --color-gold-dark: #9b8355;
   --color-gold-light: #f4efe5;
   --color-sage-light: #e8efeb;
+  --color-sage-dark: #40634c;
   --color-danger: #b45b5b;
 }
 
@@ -1581,4 +1582,80 @@ button {
   margin-bottom: 6px;
   color: #B7834F;
   font-size: 0.86rem;
+}
+
+.addressNoticeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mapIconLink {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(64, 99, 76, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--color-sage-dark);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.mapIconLink:hover,
+.mapIconLink:focus-visible {
+  border-color: var(--color-sage-dark);
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.mapIconLink svg {
+  width: 23px;
+  height: 23px;
+  fill: currentColor;
+}
+
+.addressList {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.addressRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.addressRow p {
+  margin: 0;
+}
+
+.copyAddressButton {
+  min-height: 30px;
+  flex: 0 0 auto;
+  padding: 0 10px;
+  border: 1px solid rgba(64, 99, 76, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.76);
+  color: var(--color-text-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.copyAddressButton:hover,
+.copyAddressButton:focus-visible {
+  border-color: var(--color-sage-dark);
+  background: #fff;
+}
+
+@media (max-width: 480px) {
+  .addressRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
