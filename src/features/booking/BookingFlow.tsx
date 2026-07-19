@@ -91,7 +91,7 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
         <div className="sheetBackdrop policyBackdrop" onClick={() => setPolicyOpen(false)}>
           <section className="paymentSheet policySheet" role="dialog" aria-modal="true" aria-labelledby="policy-modal-title" onClick={(event) => event.stopPropagation()}>
             <div className="modalTitleRow"><h2 id="policy-modal-title">{copy.pricing.title}</h2><button type="button" className="policyCloseButton" aria-label={copy.payment.confirmation.cancel} onClick={() => setPolicyOpen(false)}>×</button></div>
-            <PricingPolicySection copy={copy.pricing} pricing={pricing} checkIn={dates.checkIn} locale={locale} />
+            <PricingPolicySection copy={copy.pricing} locale={locale} />
           </section>
         </div>
       ) : null}
