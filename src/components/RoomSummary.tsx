@@ -1,3 +1,4 @@
+import { AccommodationAddressNotice } from '@/components/AccommodationAddressNotice';
 import { IndependentStayNotice } from '@/components/IndependentStayNotice';
 import { StayTimeInfo } from '@/components/StayTimeInfo';
 
@@ -11,6 +12,7 @@ type RoomSummaryCopy = {
   checkOut: string;
   independence: { title: string; description: string };
   uniformRoom: { title: string; description: string };
+  addressInfo: { title: string; koreanAddress: string; englishAddress: string; mapLabel: string; copyLabel: string; copiedLabel: string };
 };
 
 export function RoomSummary({ copy }: { copy: RoomSummaryCopy }) {
@@ -21,6 +23,7 @@ export function RoomSummary({ copy }: { copy: RoomSummaryCopy }) {
       <StayTimeInfo title={copy.stayTimeTitle} checkInLabel={copy.checkInLabel} checkIn={copy.checkIn} checkOutLabel={copy.checkOutLabel} checkOut={copy.checkOut} />
       <IndependentStayNotice title={copy.independence.title} description={copy.independence.description} />
       <IndependentStayNotice title={copy.uniformRoom.title} description={copy.uniformRoom.description} />
+      <AccommodationAddressNotice copy={copy.addressInfo} />
     </section>
   );
 }

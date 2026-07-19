@@ -1,4 +1,4 @@
-export type RoomImageKey = 'bedroom' | 'kitchen' | 'bathroom' | 'laundry' | 'overview';
+export type RoomImageKey = 'bedroom' | 'kitchen' | 'bathroom' | 'laundry' | 'overview' | 'overviewExtra';
 
 export type RoomImage = {
   id: RoomImageKey;
@@ -33,7 +33,8 @@ export const standardRoomImages: RoomImage[] = [
   { id: 'bedroom', src: '/images/room/standard-01.png' },
   { id: 'kitchen', src: '/images/room/standard-02.png' },
   { id: 'bathroom', src: '/images/room/standard-03.png' },
-  { id: 'overview', src: '/images/room/standard-05.png' }
+  { id: 'overview', src: '/images/room/standard-05.png' },
+  { id: 'overviewExtra', src: '/images/room/standard-06.png' }
 ];
 
 export const roomAmenities: Amenity[] = [
