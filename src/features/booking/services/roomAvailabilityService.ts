@@ -2,94 +2,69 @@ import type { RowDataPacket } from 'mysql2';
 import { getDatabasePool } from '@/lib/db';
 
 const BOOKING_BUILDING_ID = 1;
-const dateColumnCandidates = ['stay_date', 'reservation_date', 'reserved_date', 'calendar_date', 'calendar_day', 'snapshot_date', 'date'] as const;
-const availableColumnCandidates = ['is_available', 'available', 'available_yn', 'availability_status', 'status', 'is_reserved', 'reserved', 'is_booked', 'is_occupied'] as const;
 
-type ColumnRow = RowDataPacket & { Field: string };
-type RoomAvailabilityRow = RowDataPacket & { room_no: string | number; available_nights: number | string };
-type SnapshotSchema = { dateColumn: string; availableExpression: string };
+type RoomAvailabilityRow = RowDataPacket & {
+  room_no: string;
+  overlapping_nights: number | string;
+};
 
 export type RoomAvailability = {
   availableRooms: Array<{ roomNo: string }>;
-  partiallyAvailableRooms: Array<{ roomNo: string; availableNights: number; requestedNights: number }>;
+  partiallyAvailableRooms: Array<{ roomNo: string; availableNights: number; overlappingNights: number; requestedNights: number }>;
 };
 
-let snapshotSchemaPromise: Promise<SnapshotSchema> | undefined;
-
-function quoteIdentifier(identifier: string) {
-  return `\`${identifier.replaceAll('`', '``')}\``;
-}
-
-async function readSnapshotSchema(): Promise<SnapshotSchema> {
-  const [columnRows] = await getDatabasePool().query<ColumnRow[]>('SHOW COLUMNS FROM reservation_calendar_snapshot');
-  const columns = new Set(columnRows.map((column) => column.Field));
-
-  if (!columns.has('building_id') || !columns.has('room_no')) {
-    throw new RoomAvailabilityError('DB_SCHEMA_MISMATCH', 'reservation_calendar_snapshot 테이블에 building_id와 room_no 컬럼이 필요합니다.');
-  }
-
-  const dateColumn = dateColumnCandidates.find((candidate) => columns.has(candidate));
-  const availableColumn = availableColumnCandidates.find((candidate) => columns.has(candidate));
-  if (!dateColumn || !availableColumn) {
-    throw new RoomAvailabilityError(
-      'DB_SCHEMA_MISMATCH',
-      `reservation_calendar_snapshot의 날짜 또는 가용 상태 컬럼을 찾지 못했습니다. 확인된 컬럼: ${[...columns].join(', ')}`,
-    );
-  }
-
-  const quotedAvailability = quoteIdentifier(availableColumn);
-  const availableExpression = availableColumn === 'is_reserved' || availableColumn === 'reserved' || availableColumn === 'is_booked' || availableColumn === 'is_occupied'
-    ? `${quotedAvailability} = 0`
-    : availableColumn === 'status' || availableColumn === 'availability_status'
-      ? `LOWER(${quotedAvailability}) IN ('available', 'vacant', 'open', 'true', '1')`
-      : availableColumn === 'available_yn'
-        ? `LOWER(${quotedAvailability}) IN ('y', 'yes', 'true', '1')`
-        : `${quotedAvailability} = 1`;
-
-  return { dateColumn, availableExpression };
-}
-
-async function getSnapshotSchema() {
-  snapshotSchemaPromise ??= readSnapshotSchema().catch((error) => {
-    snapshotSchemaPromise = undefined;
-    throw error;
-  });
-  return snapshotSchemaPromise;
-}
-
-export class RoomAvailabilityError extends Error {
-  constructor(public readonly code: string, message: string) {
-    super(message);
-    this.name = 'RoomAvailabilityError';
-  }
-}
-
 /**
- * Reads the daily availability snapshot for building 1. Common legacy names
- * for the date and availability columns are detected before issuing the query.
+ * Returns active rooms in building 1 grouped by how much their reservations
+ * overlap the requested stay. Only each room's newest ICS snapshot is used;
+ * older snapshots must not make a currently available room look occupied.
  */
 export async function getRoomAvailability(checkIn: string, checkOut: string, requestedNights: number): Promise<RoomAvailability> {
-  const { dateColumn, availableExpression } = await getSnapshotSchema();
-  const quotedDate = quoteIdentifier(dateColumn);
   const [rows] = await getDatabasePool().execute<RoomAvailabilityRow[]>(
-    `SELECT room_no,
-            COUNT(DISTINCT CASE WHEN ${availableExpression} THEN ${quotedDate} END) AS available_nights
-       FROM reservation_calendar_snapshot
-      WHERE building_id = ?
-        AND ${quotedDate} >= ?
-        AND ${quotedDate} < ?
-      GROUP BY room_no
-     HAVING available_nights > 0
-      ORDER BY available_nights DESC, room_no ASC`,
-    [BOOKING_BUILDING_ID, checkIn, checkOut],
+    `SELECT rooms.room_no,
+            COALESCE(SUM(
+              GREATEST(
+                0,
+                DATEDIFF(
+                  LEAST(DATE(reservations.end_at), ?),
+                  GREATEST(DATE(reservations.start_at), ?)
+                )
+              )
+            ), 0) AS overlapping_nights
+       FROM client_rooms AS rooms
+       LEFT JOIN (
+         SELECT snapshot.room_id, snapshot.start_at, snapshot.end_at
+           FROM reservation_calendar_snapshot AS snapshot
+           INNER JOIN (
+             SELECT room_id, MAX(snapshot_at) AS latest_snapshot_at
+               FROM reservation_calendar_snapshot
+              GROUP BY room_id
+           ) AS latest
+             ON latest.room_id = snapshot.room_id
+            AND latest.latest_snapshot_at = snapshot.snapshot_at
+       ) AS reservations
+         ON reservations.room_id = rooms.id
+        AND reservations.start_at < TIMESTAMP(?, rooms.checkout_time)
+        AND reservations.end_at > TIMESTAMP(?, rooms.checkin_time)
+      WHERE rooms.building_id = ?
+        AND rooms.open_yn = 1
+        AND rooms.facility_yn = 1
+        AND rooms.start_date <= ?
+        AND (rooms.end_date IS NULL OR rooms.end_date >= ?)
+      GROUP BY rooms.id, rooms.room_no, rooms.weight
+      ORDER BY overlapping_nights DESC, rooms.weight DESC, rooms.room_no ASC`,
+    [checkOut, checkIn, checkOut, checkIn, BOOKING_BUILDING_ID, checkIn, checkOut],
   );
 
-  const availability = rows.map((row) => ({ roomNo: String(row.room_no), availableNights: Number(row.available_nights) }));
+  const rooms = rows.map((row) => ({
+    roomNo: row.room_no.trim(),
+    overlappingNights: Math.min(requestedNights, Number(row.overlapping_nights)),
+  }));
+
   return {
-    availableRooms: availability.filter((room) => room.availableNights === requestedNights).map(({ roomNo }) => ({ roomNo })),
-    partiallyAvailableRooms: availability
-      .filter((room) => room.availableNights > 0 && room.availableNights < requestedNights)
-      .map((room) => ({ ...room, requestedNights })),
+    availableRooms: rooms.filter((room) => room.overlappingNights === 0).map(({ roomNo }) => ({ roomNo })),
+    partiallyAvailableRooms: rooms
+      .filter((room) => room.overlappingNights > 0 && room.overlappingNights < requestedNights)
+      .map((room) => ({ ...room, availableNights: requestedNights - room.overlappingNights, requestedNights })),
   };
 }
 

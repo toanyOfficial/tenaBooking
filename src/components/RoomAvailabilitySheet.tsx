@@ -17,8 +17,8 @@ type Props = {
 };
 
 const copies = {
-  ko: { title: '투숙 가능한 객실을 선택해 주세요', description: '선택한 기간 전체에 투숙 가능한 객실입니다.', loading: '객실 일정을 확인하고 있습니다.', empty: '선택한 기간 전체에 투숙 가능한 객실이 없습니다.', partialTitle: '선택 기간과 일부만 겹치는 객실', partialDescription: '투숙 가능한 날짜가 많이 겹치는 객실부터 표시합니다.', availableNights: '{total}박 중 {available}박 가능', cancel: '취소', continue: '선택한 객실로 계속하기' },
-  en: { title: 'Select an available room', description: 'These rooms are available for your entire stay.', loading: 'Checking room availability.', empty: 'No room is available for the entire selected stay.', partialTitle: 'Rooms available for part of your stay', partialDescription: 'Rooms with more matching nights are shown first.', availableNights: '{available} of {total} nights available', cancel: 'Cancel', continue: 'Continue with selected room' },
+  ko: { title: '투숙 가능한 객실을 선택해 주세요', description: '선택한 기간 전체에 투숙 가능한 객실입니다.', loading: '객실 일정을 확인하고 있습니다.', empty: '선택한 기간 전체에 투숙 가능한 객실이 없습니다.', partialTitle: '예약 기간이 일부 겹치는 객실', partialDescription: '기존 예약과 많이 겹치는 객실부터 표시합니다.', overlap: '{overlap}박 겹침 · {available}박 가능', cancel: '취소', continue: '선택한 객실로 계속하기' },
+  en: { title: 'Select an available room', description: 'These rooms are available for your entire stay.', loading: 'Checking room availability.', empty: 'No room is available for the entire selected stay.', partialTitle: 'Rooms with partial reservation overlap', partialDescription: 'Rooms with more overlapping reserved nights are shown first.', overlap: '{overlap} nights overlap · {available} nights available', cancel: 'Cancel', continue: 'Continue with selected room' },
 } as const;
 
 export function RoomAvailabilitySheet({ open, loading, locale, availableRooms, partiallyAvailableRooms, selectedRoomNo, onSelect, onClose, onContinue }: Props) {
@@ -64,7 +64,7 @@ export function RoomAvailabilitySheet({ open, loading, locale, availableRooms, p
               <aside className="partialRoomSection" aria-labelledby="partial-room-title">
                 <h3 id="partial-room-title">{copy.partialTitle}</h3>
                 <p>{copy.partialDescription}</p>
-                <ul>{partiallyAvailableRooms.map((room) => <li key={room.roomNo}><strong>{room.roomNo}</strong><span>{copy.availableNights.replace('{available}', String(room.availableNights)).replace('{total}', String(room.requestedNights))}</span></li>)}</ul>
+                <ul>{partiallyAvailableRooms.map((room) => <li key={room.roomNo}><strong>{room.roomNo}</strong><span>{copy.overlap.replace('{overlap}', String(room.overlappingNights)).replace('{available}', String(room.availableNights))}</span></li>)}</ul>
               </aside>
             ) : null}
           </>
