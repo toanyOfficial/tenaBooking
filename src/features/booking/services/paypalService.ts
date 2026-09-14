@@ -19,7 +19,7 @@ async function getAccessToken() {
   return data.access_token ?? null;
 }
 
-export async function createPayPalOrder(summary: BookingSummary): Promise<{ orderId: string; approvalUrl: string } | null> {
+export async function createPayPalOrder(summary: BookingSummary, roomNo: string): Promise<{ orderId: string; approvalUrl: string } | null> {
   const accessToken = await getAccessToken();
   if (!accessToken) return null;
   const environment = process.env.PAYPAL_ENVIRONMENT === 'live' ? 'live' : 'sandbox';
@@ -29,7 +29,7 @@ export async function createPayPalOrder(summary: BookingSummary): Promise<{ orde
     headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       intent: 'CAPTURE',
-      purchase_units: [{ amount: { currency_code: summary.currency, value: String(summary.totalAmount) }, description: `TOANY Medical Stay ${summary.checkIn} - ${summary.checkOut}` }],
+      purchase_units: [{ amount: { currency_code: summary.currency, value: String(summary.totalAmount) }, description: `TOANY Medical Stay room ${roomNo}, ${summary.checkIn} - ${summary.checkOut}` }],
       application_context: { return_url: `${siteUrl}/payment/return`, cancel_url: `${siteUrl}/payment/cancel` }
     })
   });

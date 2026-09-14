@@ -26,11 +26,13 @@ Auto Deploy에서는 별도 build/start command 없이 `bun run build`, `bun run
 
 - PayPal 미설정 시 결제 요청은 mock 모드로 동작합니다.
 - `HOLIDAY_API_KEY` 미설정 시 2026~2027 fallback 공휴일 데이터와 주말 기준으로 요금을 계산합니다.
+- MySQL 연결에는 `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`이 필요합니다. 서버 코드에서 `getDatabasePool()`을 호출하면 공용 connection pool이 생성됩니다.
+- 객실 조회는 `reservation_calendar_snapshot`의 `building_id`, `room_no`와 날짜·가용 상태 컬럼을 사용합니다. 날짜 및 상태 컬럼은 서비스에 정의된 기존 명칭 후보를 자동 감지하며, 결제 직전에 `building_id = 1`인 객실의 선택 기간 전체 가용 여부를 다시 확인합니다. 지원하지 않는 스키마이면 API 응답에 확인된 컬럼과 오류 코드를 반환합니다.
 - 문의 전화번호와 카카오톡 URL이 없으면 해당 문의 버튼은 준비 중 상태로 표시됩니다.
 
 ## 현재 프로토타입 미구현 범위
 
-- 실제 예약 저장 및 DB 연동
+- 실제 예약 저장
 - PayPal 결제 승인 검증, capture, webhook 처리
 - 중복 예약 방지
 - 관리자 화면
