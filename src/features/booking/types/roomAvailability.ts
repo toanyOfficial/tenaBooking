@@ -4,4 +4,4 @@ export type PartiallyAvailableRoom = AvailableRoom & { availableNights: number; 
 
 export type RoomAvailabilityResponse =
   | { success: true; availableRooms: AvailableRoom[]; partiallyAvailableRooms: PartiallyAvailableRoom[] }
-  | { success: false; message: string };
+  | { success: false; message: string; errorCode?: string };

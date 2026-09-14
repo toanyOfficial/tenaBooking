@@ -9,10 +9,10 @@ declare global {
   var tenaBookingDatabasePool: Pool | undefined;
 }
 
-function getRequiredEnvironmentVariable(name: DatabaseEnvironmentVariable): string {
+function getRequiredEnvironmentVariable(name: DatabaseEnvironmentVariable, allowEmpty = false): string {
   const value = process.env[name];
 
-  if (value === undefined || value.trim() === '') {
+  if (value === undefined || (!allowEmpty && value.trim() === '')) {
     throw new Error(`Missing required database environment variable: ${name}`);
   }
 
@@ -31,7 +31,8 @@ function getDatabaseConfig(): PoolOptions {
     host: getRequiredEnvironmentVariable('DB_HOST'),
     port,
     user: getRequiredEnvironmentVariable('DB_USER'),
-    password: getRequiredEnvironmentVariable('DB_PASSWORD'),
+    // Passwordless local MySQL instances are valid as long as the variable is defined.
+    password: getRequiredEnvironmentVariable('DB_PASSWORD', true),
     database: getRequiredEnvironmentVariable('DB_NAME'),
     waitForConnections: true,
     connectionLimit: 10,

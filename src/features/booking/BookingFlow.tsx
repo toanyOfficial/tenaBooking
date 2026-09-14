@@ -81,13 +81,14 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
       const query = new URLSearchParams({ checkIn: summary.checkIn, checkOut: summary.checkOut });
       const response = await fetch(`/api/rooms/availability?${query}`);
       const data = await response.json() as RoomAvailabilityResponse;
-      if (!response.ok || !data.success) throw new Error('availability-request-failed');
+      if (!response.ok || !data.success) throw new Error(data.success ? 'availability-request-failed' : data.message);
       setAvailableRooms(data.availableRooms);
       setPartiallyAvailableRooms(data.partiallyAvailableRooms);
       setPaymentState('selecting-room');
-    } catch {
+    } catch (error) {
       setPaymentState('error');
-      setStatusMessage(locale === 'ko' ? '객실 예약 가능 여부를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.' : 'Could not check room availability. Please try again shortly.');
+      const fallbackMessage = locale === 'ko' ? '객실 예약 가능 여부를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.' : 'Could not check room availability. Please try again shortly.';
+      setStatusMessage(error instanceof Error && error.message !== 'availability-request-failed' ? error.message : fallbackMessage);
     }
   };
 
