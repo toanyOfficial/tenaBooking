@@ -1025,6 +1025,29 @@ button {
   text-align: center;
 }
 
+.roomAvailabilitySheet {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.roomAvailabilityContent {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.roomAvailabilityContent::-webkit-scrollbar {
+  display: none;
+}
+
+.roomAvailabilityContent > p:first-child {
+  margin: 10px 0 0;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
 .availableRoomList {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1095,9 +1118,30 @@ button {
   background: var(--color-background);
 }
 
+.partialRoomSection li {
+  align-items: flex-start;
+}
+
 .partialRoomSection li span {
+  display: grid;
+  gap: 3px;
   color: var(--color-text-secondary);
   font-size: 0.85rem;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.partialRoomSection li span b {
+  color: var(--color-text-primary);
+  font-size: 0.78rem;
+}
+
+.roomAvailabilitySheet > .sheetActions {
+  flex: 0 0 auto;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
 .selectedRoomSummary span {

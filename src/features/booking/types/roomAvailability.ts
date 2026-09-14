@@ -1,6 +1,8 @@
 export type AvailableRoom = { roomNo: string };
 
-export type PartiallyAvailableRoom = AvailableRoom & { availableNights: number; overlappingNights: number; requestedNights: number };
+export type AvailableDateBlock = { start: string; end: string };
+
+export type PartiallyAvailableRoom = AvailableRoom & { availableBlocks: AvailableDateBlock[] };
 
 export type RoomAvailabilityResponse =
   | { success: true; availableRooms: AvailableRoom[]; partiallyAvailableRooms: PartiallyAvailableRoom[] }

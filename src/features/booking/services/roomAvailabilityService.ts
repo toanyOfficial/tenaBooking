@@ -1,35 +1,45 @@
 import type { RowDataPacket } from 'mysql2';
+import { addDays } from '@/lib/date';
 import { getDatabasePool } from '@/lib/db';
 
 const BOOKING_BUILDING_ID = 1;
 
 type RoomAvailabilityRow = RowDataPacket & {
+  room_id: number;
   room_no: string;
-  overlapping_nights: number | string;
+  reservation_start: string | null;
+  reservation_end: string | null;
 };
 
+export type AvailableDateBlock = { start: string; end: string };
 export type RoomAvailability = {
   availableRooms: Array<{ roomNo: string }>;
-  partiallyAvailableRooms: Array<{ roomNo: string; availableNights: number; overlappingNights: number; requestedNights: number }>;
+  partiallyAvailableRooms: Array<{ roomNo: string; availableBlocks: AvailableDateBlock[] }>;
 };
 
-/**
- * Returns active rooms in building 1 grouped by how much their reservations
- * overlap the requested stay. Only each room's newest ICS snapshot is used;
- * older snapshots must not make a currently available room look occupied.
- */
+function getStayDates(checkIn: string, requestedNights: number) {
+  return Array.from({ length: requestedNights }, (_, index) => addDays(checkIn, index));
+}
+
+function toAvailableBlocks(availableDates: string[]): AvailableDateBlock[] {
+  return availableDates.reduce<AvailableDateBlock[]>((blocks, date) => {
+    const previous = blocks.at(-1);
+    if (previous?.end === date) {
+      previous.end = addDays(date, 1);
+    } else {
+      blocks.push({ start: date, end: addDays(date, 1) });
+    }
+    return blocks;
+  }, []);
+}
+
+/** Uses each room's newest ICS snapshot to find the exact available date blocks. */
 export async function getRoomAvailability(checkIn: string, checkOut: string, requestedNights: number): Promise<RoomAvailability> {
   const [rows] = await getDatabasePool().execute<RoomAvailabilityRow[]>(
-    `SELECT rooms.room_no,
-            COALESCE(SUM(
-              GREATEST(
-                0,
-                DATEDIFF(
-                  LEAST(DATE(reservations.end_at), ?),
-                  GREATEST(DATE(reservations.start_at), ?)
-                )
-              )
-            ), 0) AS overlapping_nights
+    `SELECT rooms.id AS room_id,
+            rooms.room_no,
+            DATE_FORMAT(reservations.start_at, '%Y-%m-%d') AS reservation_start,
+            DATE_FORMAT(reservations.end_at, '%Y-%m-%d') AS reservation_end
        FROM client_rooms AS rooms
        LEFT JOIN (
          SELECT snapshot.room_id, snapshot.start_at, snapshot.end_at
@@ -50,21 +60,40 @@ export async function getRoomAvailability(checkIn: string, checkOut: string, req
         AND rooms.facility_yn = 1
         AND rooms.start_date <= ?
         AND (rooms.end_date IS NULL OR rooms.end_date >= ?)
-      GROUP BY rooms.id, rooms.room_no, rooms.weight
-      ORDER BY overlapping_nights DESC, rooms.weight DESC, rooms.room_no ASC`,
-    [checkOut, checkIn, checkOut, checkIn, BOOKING_BUILDING_ID, checkIn, checkOut],
+      ORDER BY rooms.weight DESC, rooms.room_no ASC, reservations.start_at ASC`,
+    [checkOut, checkIn, BOOKING_BUILDING_ID, checkIn, checkOut],
   );
 
-  const rooms = rows.map((row) => ({
-    roomNo: row.room_no.trim(),
-    overlappingNights: Math.min(requestedNights, Number(row.overlapping_nights)),
-  }));
+  const stayDates = getStayDates(checkIn, requestedNights);
+  const rooms = new Map<number, { roomNo: string; occupiedDates: Set<string> }>();
+
+  for (const row of rows) {
+    const room = rooms.get(row.room_id) ?? { roomNo: row.room_no.trim(), occupiedDates: new Set<string>() };
+    if (row.reservation_start && row.reservation_end) {
+      for (const date of stayDates) {
+        if (date >= row.reservation_start && date < row.reservation_end) room.occupiedDates.add(date);
+      }
+    }
+    rooms.set(row.room_id, room);
+  }
+
+  const availability = [...rooms.values()].map((room) => {
+    const availableDates = stayDates.filter((date) => !room.occupiedDates.has(date));
+    return {
+      roomNo: room.roomNo,
+      availableBlocks: toAvailableBlocks(availableDates),
+      availableNights: availableDates.length,
+      overlappingNights: requestedNights - availableDates.length,
+      requestedNights,
+    };
+  });
 
   return {
-    availableRooms: rooms.filter((room) => room.overlappingNights === 0).map(({ roomNo }) => ({ roomNo })),
-    partiallyAvailableRooms: rooms
-      .filter((room) => room.overlappingNights > 0 && room.overlappingNights < requestedNights)
-      .map((room) => ({ ...room, availableNights: requestedNights - room.overlappingNights, requestedNights })),
+    availableRooms: availability.filter((room) => room.availableNights === requestedNights).map(({ roomNo }) => ({ roomNo })),
+    partiallyAvailableRooms: availability
+      .filter((room) => room.availableNights > 0 && room.availableNights < requestedNights)
+      .sort((left, right) => right.overlappingNights - left.overlappingNights || left.roomNo.localeCompare(right.roomNo))
+      .map(({ roomNo, availableBlocks }) => ({ roomNo, availableBlocks })),
   };
 }
 
