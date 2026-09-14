@@ -1018,6 +1018,137 @@ button {
   line-height: 1.5;
 }
 
+.roomAvailabilityState {
+  padding: 20px 14px;
+  border-radius: 12px;
+  background: var(--color-background);
+  text-align: center;
+}
+
+.roomAvailabilitySheet {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.roomAvailabilityContent {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.roomAvailabilityContent::-webkit-scrollbar {
+  display: none;
+}
+
+.roomAvailabilityContent > p:first-child {
+  margin: 10px 0 0;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.availableRoomList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.roomOption {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.roomOption.selected {
+  border-color: var(--color-gold-dark);
+  background: var(--color-gold-light);
+}
+
+.roomOption input {
+  margin: 0;
+  accent-color: var(--color-gold-dark);
+}
+
+.partialRoomSection {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border);
+}
+
+.partialRoomSection h3,
+.partialRoomSection p {
+  margin: 0;
+}
+
+.partialRoomSection p {
+  margin-top: 6px;
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.partialRoomSection ul {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.partialRoomSection li,
+.selectedRoomSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: var(--color-background);
+}
+
+.partialRoomSection li {
+  align-items: flex-start;
+}
+
+.partialRoomSection li span {
+  display: grid;
+  gap: 3px;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.partialRoomSection li span b {
+  color: var(--color-text-primary);
+  font-size: 0.78rem;
+}
+
+.roomAvailabilitySheet > .sheetActions {
+  flex: 0 0 auto;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.selectedRoomSummary span {
+  color: var(--color-gold-dark);
+  font-weight: 800;
+}
+
 .sheetActions {
   display: grid;
   grid-template-columns: 1fr 1fr;
