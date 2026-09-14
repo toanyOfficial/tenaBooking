@@ -1,8 +1,13 @@
+import type { RowDataPacket } from 'mysql2';
 import { fallbackKoreanHolidays } from '@/features/booking/data/holidays';
 import type { Holiday } from '@/features/booking/types/holiday';
+import { getDatabasePool, isDatabaseConfigured } from '@/lib/db';
 
-type HolidaySource = 'api' | 'fallback';
-const holidayCache = new Map<number, { holidays: Holiday[]; source: HolidaySource }>();
+type HolidaySource = 'database' | 'api' | 'fallback';
+type HolidayResult = { holidays: Holiday[]; source: HolidaySource };
+type HolidayRow = RowDataPacket & { holiday_date: string; holiday_name: string };
+
+const holidayCache = new Map<number, Promise<HolidayResult>>();
 
 function normalizeApiHoliday(item: unknown): Holiday | null {
   if (!item || typeof item !== 'object') return null;
@@ -12,12 +17,38 @@ function normalizeApiHoliday(item: unknown): Holiday | null {
   return {
     date: `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}`,
     name: String(source.dateName ?? '대한민국 공휴일'),
-    isSubstitute: String(source.dateName ?? '').includes('대체')
+    isSubstitute: String(source.dateName ?? '').includes('대체'),
   };
 }
 
 function uniqueHolidays(holidays: Holiday[]): Holiday[] {
-  return Array.from(new Map(holidays.map((holiday) => [holiday.date, holiday])).values()).sort((a, b) => a.date.localeCompare(b.date));
+  const grouped = new Map<string, Holiday>();
+  for (const holiday of holidays) {
+    const existing = grouped.get(holiday.date);
+    grouped.set(holiday.date, existing
+      ? { date: holiday.date, name: `${existing.name}, ${holiday.name}`, isSubstitute: existing.isSubstitute || holiday.isSubstitute }
+      : holiday);
+  }
+  return [...grouped.values()].sort((left, right) => left.date.localeCompare(right.date));
+}
+
+async function fetchDatabaseHolidays(year: number): Promise<Holiday[]> {
+  const startDate = `${year}-01-01`;
+  const endDate = `${year + 1}-01-01`;
+  const [rows] = await getDatabasePool().execute<HolidayRow[]>(
+    `SELECT DATE_FORMAT(holiday_date, '%Y-%m-%d') AS holiday_date, holiday_name
+       FROM korean_holiday
+      WHERE is_holiday = 1
+        AND holiday_date >= ?
+        AND holiday_date < ?
+      ORDER BY holiday_date ASC, id ASC`,
+    [startDate, endDate],
+  );
+  return uniqueHolidays(rows.map((row) => ({
+    date: row.holiday_date,
+    name: row.holiday_name,
+    isSubstitute: row.holiday_name.includes('대체'),
+  })));
 }
 
 async function fetchApiHolidays(year: number): Promise<Holiday[] | null> {
@@ -41,11 +72,29 @@ async function fetchApiHolidays(year: number): Promise<Holiday[] | null> {
   }
 }
 
-export async function getKoreanHolidays(year: number): Promise<{ holidays: Holiday[]; source: HolidaySource }> {
+async function loadKoreanHolidays(year: number): Promise<HolidayResult> {
+  if (isDatabaseConfigured()) {
+    try {
+      return { holidays: await fetchDatabaseHolidays(year), source: 'database' };
+    } catch (error) {
+      console.error(`Failed to read ${year} holidays from korean_holiday.`, error);
+    }
+  }
+
+  const apiHolidays = await fetchApiHolidays(year);
+  return apiHolidays?.length
+    ? { holidays: apiHolidays, source: 'api' }
+    : { holidays: uniqueHolidays(fallbackKoreanHolidays[year] ?? []), source: 'fallback' };
+}
+
+export async function getKoreanHolidays(year: number): Promise<HolidayResult> {
   const cached = holidayCache.get(year);
   if (cached) return cached;
-  const apiHolidays = await fetchApiHolidays(year);
-  const result = apiHolidays?.length ? { holidays: apiHolidays, source: 'api' as const } : { holidays: uniqueHolidays(fallbackKoreanHolidays[year] ?? []), source: 'fallback' as const };
+
+  const result = loadKoreanHolidays(year).catch((error) => {
+    holidayCache.delete(year);
+    throw error;
+  });
   holidayCache.set(year, result);
   return result;
 }
