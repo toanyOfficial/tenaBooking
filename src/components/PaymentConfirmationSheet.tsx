@@ -6,7 +6,7 @@ import { PayPalPaymentButton } from '@/components/PayPalPaymentButton';
 import type { BookingSummary as BookingSummaryType } from '@/features/booking/bookingSummary';
 import type { Locale } from '@/locales/messages';
 
-type Props = { open: boolean; summary: BookingSummaryType | null; locale: Locale; copy: { title: string; description: string; cancel: string; continue: string; refundAgreement: string }; roomCopy: { type: string }; paymentCopy: { total: string }; bookingCopy: { nights: string; oneNight: string }; onClose: () => void; onContinue: () => void; busy: boolean };
+type Props = { open: boolean; summary: BookingSummaryType | null; roomNo: string; locale: Locale; copy: { title: string; description: string; cancel: string; continue: string; refundAgreement: string }; roomCopy: { type: string }; paymentCopy: { total: string }; bookingCopy: { nights: string; oneNight: string }; onClose: () => void; onContinue: () => void; busy: boolean };
 
 function highlightRefundPolicy(value: string) {
   const patterns = ['환불 정책', '환불정책'];
@@ -17,7 +17,7 @@ function highlightRefundPolicy(value: string) {
   ));
 }
 
-export function PaymentConfirmationSheet({ open, summary, locale, copy, roomCopy, paymentCopy, bookingCopy, onClose, onContinue, busy }: Props) {
+export function PaymentConfirmationSheet({ open, summary, roomNo, locale, copy, roomCopy, paymentCopy, bookingCopy, onClose, onContinue, busy }: Props) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!open) return;
@@ -34,6 +34,7 @@ export function PaymentConfirmationSheet({ open, summary, locale, copy, roomCopy
       <section className="paymentSheet" role="dialog" aria-modal="true" aria-labelledby="payment-confirm-title" aria-describedby="payment-confirm-description" onClick={(event) => event.stopPropagation()}>
         <h2 id="payment-confirm-title">{copy.title}</h2>
         <p id="payment-confirm-description">{copy.description}</p>
+        <p className="selectedRoomSummary"><strong>{roomCopy.type}</strong><span>{roomNo}</span></p>
         <BookingSummary summary={summary} roomCopy={roomCopy} paymentCopy={paymentCopy} bookingCopy={bookingCopy} locale={locale} />
         <p className="helperText refundAgreementText">{highlightRefundPolicy(copy.refundAgreement)}</p>
         <div className="sheetActions">

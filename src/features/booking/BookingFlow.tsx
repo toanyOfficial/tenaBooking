@@ -5,6 +5,7 @@ import { PaymentConfirmationSheet } from '@/components/PaymentConfirmationSheet'
 import { PaymentCTA } from '@/components/PaymentCTA';
 import { PaymentStatusMessage } from '@/components/PaymentStatusMessage';
 import { PayPalPaymentButton } from '@/components/PayPalPaymentButton';
+import { RoomAvailabilitySheet } from '@/components/RoomAvailabilitySheet';
 import { BookingDateSection } from '@/components/BookingDateSection';
 import { PaymentSummary } from '@/features/booking/PaymentSummary';
 import { PricingPolicySection } from '@/features/booking/PricingPolicySection';
@@ -13,10 +14,11 @@ import { createBookingSummary } from '@/features/booking/bookingSummary';
 import { calculateStayPricing, formatWon } from '@/features/booking/pricing';
 import type { Holiday } from '@/features/booking/types/holiday';
 import type { CreatePayPalOrderResponse } from '@/features/booking/types/paypal';
+import type { PartiallyAvailableRoom, RoomAvailabilityResponse } from '@/features/booking/types/roomAvailability';
 import type { Locale } from '@/locales/messages';
 
 type BookingDateState = { checkIn: string; checkOut: string };
-type PaymentState = 'idle' | 'confirming' | 'creating' | 'redirecting' | 'error';
+type PaymentState = 'idle' | 'checking-rooms' | 'selecting-room' | 'confirming' | 'creating' | 'redirecting' | 'error';
 
 const localeMap: Record<Locale, string> = { en: 'en-US', ko: 'ko-KR', 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', ja: 'ja-JP', th: 'th-TH', vi: 'vi-VN', ru: 'ru-RU' };
 const formatNightCount = (count: number, copy: { oneNight: string; nights: string }) => count === 1 ? copy.oneNight : copy.nights.replace('{count}', String(count));
@@ -41,12 +43,15 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
   const [policyOpen, setPolicyOpen] = useState(false);
   const [paymentCompleteOpen, setPaymentCompleteOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [availableRooms, setAvailableRooms] = useState<Array<{ roomNo: string }>>([]);
+  const [partiallyAvailableRooms, setPartiallyAvailableRooms] = useState<PartiallyAvailableRoom[]>([]);
+  const [selectedRoomNo, setSelectedRoomNo] = useState('');
   const primaryPaymentRef = useRef<HTMLDivElement>(null);
   const pricing = useMemo(() => calculateStayPricing(dates.checkIn, dates.checkOut, holidays), [dates.checkIn, dates.checkOut, holidays]);
   const summary = useMemo(() => createBookingSummary({ roomType: 'standard', checkIn: dates.checkIn, checkOut: dates.checkOut, stayNights: pricing.nights }), [dates.checkIn, dates.checkOut, pricing.nights]);
-  const canPay = Boolean(summary && pricing.nights.length && pricing.totalAmount > 0 && paymentState !== 'creating' && paymentState !== 'redirecting');
+  const canPay = Boolean(summary && pricing.nights.length && pricing.totalAmount > 0 && paymentState !== 'checking-rooms' && paymentState !== 'creating' && paymentState !== 'redirecting');
   const disabledMessage = !summary ? copy.payment.selectDates : copy.payment.checkSchedule;
-  const buttonLabel = paymentState === 'creating' ? copy.payment.creating : paymentState === 'redirecting' ? copy.payment.redirecting : canPay ? copy.payment.paypal : disabledMessage;
+  const buttonLabel = paymentState === 'checking-rooms' ? copy.payment.calculating : paymentState === 'creating' ? copy.payment.creating : paymentState === 'redirecting' ? copy.payment.redirecting : canPay ? copy.payment.paypal : disabledMessage;
 
   useEffect(() => {
     const target = primaryPaymentRef.current;
@@ -56,12 +61,42 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    setAvailableRooms([]);
+    setPartiallyAvailableRooms([]);
+    setSelectedRoomNo('');
+    setPaymentState('idle');
+    setStatusMessage('');
+  }, [dates.checkIn, dates.checkOut]);
+
+  const requestRoomAvailability = async () => {
+    if (!summary || paymentState === 'checking-rooms') return;
+    setPaymentState('checking-rooms');
+    setStatusMessage('');
+    setAvailableRooms([]);
+    setPartiallyAvailableRooms([]);
+    setSelectedRoomNo('');
+
+    try {
+      const query = new URLSearchParams({ checkIn: summary.checkIn, checkOut: summary.checkOut });
+      const response = await fetch(`/api/rooms/availability?${query}`);
+      const data = await response.json() as RoomAvailabilityResponse;
+      if (!response.ok || !data.success) throw new Error('availability-request-failed');
+      setAvailableRooms(data.availableRooms);
+      setPartiallyAvailableRooms(data.partiallyAvailableRooms);
+      setPaymentState('selecting-room');
+    } catch {
+      setPaymentState('error');
+      setStatusMessage(locale === 'ko' ? '객실 예약 가능 여부를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.' : 'Could not check room availability. Please try again shortly.');
+    }
+  };
+
   const requestPayment = async () => {
     if (!summary || paymentState === 'creating') return;
     setPaymentState('creating');
     setStatusMessage(copy.payment.creating);
     try {
-      const response = await fetch('/api/paypal/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ roomType: 'standard', checkIn: summary.checkIn, checkOut: summary.checkOut }) });
+      const response = await fetch('/api/paypal/create-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ roomType: 'standard', roomNo: selectedRoomNo, checkIn: summary.checkIn, checkOut: summary.checkOut }) });
       const data = await response.json() as CreatePayPalOrderResponse;
       if (!data.success) throw new Error('create-order-failed');
       if (data.mode === 'mock') { setPaymentState('idle'); setStatusMessage(''); setPaymentCompleteOpen(true); return; }
@@ -82,11 +117,11 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
         <strong>{formatWon(pricing.totalAmount, localeMap[locale])}</strong>
       </div>
       <div ref={primaryPaymentRef}>
-        <PayPalPaymentButton label={buttonLabel} disabled={!canPay} onClick={() => setPaymentState('confirming')} describedBy={statusMessage ? "payment-status" : undefined} />
+        <PayPalPaymentButton label={buttonLabel} disabled={!canPay} onClick={requestRoomAvailability} describedBy={statusMessage ? "payment-status" : undefined} />
       </div>
       <PaymentSummary pricingCopy={copy.pricing} bookingCopy={copy.booking} pricing={pricing} locale={locale} />
       {statusMessage ? <div id="payment-status"><PaymentStatusMessage message={statusMessage} tone={paymentState === 'error' ? 'error' : statusMessage === copy.payment.mockNotice ? 'success' : 'neutral'} /></div> : null}
-      <PaymentCTA copy={copy.payment} totalAmount={pricing.totalAmount} locale={locale} disabled={!canPay} visible={showStickyPayment} onClick={() => setPaymentState('confirming')} label={buttonLabel} />
+      <PaymentCTA copy={copy.payment} totalAmount={pricing.totalAmount} locale={locale} disabled={!canPay} visible={showStickyPayment} onClick={requestRoomAvailability} label={buttonLabel} />
       {policyOpen ? (
         <div className="sheetBackdrop policyBackdrop" onClick={() => setPolicyOpen(false)}>
           <section className="paymentSheet policySheet" role="dialog" aria-modal="true" aria-labelledby="policy-modal-title" onClick={(event) => event.stopPropagation()}>
@@ -112,7 +147,18 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
           </section>
         </div>
       ) : null}
-      <PaymentConfirmationSheet open={paymentState === 'confirming'} summary={summary} locale={locale} copy={copy.payment.confirmation} roomCopy={copy.room} paymentCopy={copy.payment} bookingCopy={copy.booking} onClose={() => setPaymentState('idle')} onContinue={requestPayment} busy={paymentState === 'creating'} />
+      <RoomAvailabilitySheet
+        open={paymentState === 'checking-rooms' || paymentState === 'selecting-room'}
+        loading={paymentState === 'checking-rooms'}
+        locale={locale}
+        availableRooms={availableRooms}
+        partiallyAvailableRooms={partiallyAvailableRooms}
+        selectedRoomNo={selectedRoomNo}
+        onSelect={setSelectedRoomNo}
+        onClose={() => setPaymentState('idle')}
+        onContinue={() => setPaymentState('confirming')}
+      />
+      <PaymentConfirmationSheet open={paymentState === 'confirming'} summary={summary} roomNo={selectedRoomNo} locale={locale} copy={copy.payment.confirmation} roomCopy={copy.room} paymentCopy={copy.payment} bookingCopy={copy.booking} onClose={() => setPaymentState('selecting-room')} onContinue={requestPayment} busy={paymentState === 'creating'} />
     </>
   );
 }
