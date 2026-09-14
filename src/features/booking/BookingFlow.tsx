@@ -15,6 +15,7 @@ import { calculateStayPricing, formatWon } from '@/features/booking/pricing';
 import type { Holiday } from '@/features/booking/types/holiday';
 import type { CreatePayPalOrderResponse } from '@/features/booking/types/paypal';
 import type { PartiallyAvailableRoom, RoomAvailabilityResponse } from '@/features/booking/types/roomAvailability';
+import { addDays, calculateStayNights } from '@/lib/date';
 import type { Locale } from '@/locales/messages';
 
 type BookingDateState = { checkIn: string; checkOut: string };
@@ -37,6 +38,8 @@ type BookingFlowProps = {
 
 export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
   const [dates, setDates] = useState<BookingDateState>({ checkIn: '', checkOut: '' });
+  const [pricingHolidays, setPricingHolidays] = useState(holidays);
+  const [holidaysLoading, setHolidaysLoading] = useState(false);
   const [paymentState, setPaymentState] = useState<PaymentState>('idle');
   const [statusMessage, setStatusMessage] = useState('');
   const [showStickyPayment, setShowStickyPayment] = useState(false);
@@ -47,11 +50,11 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
   const [partiallyAvailableRooms, setPartiallyAvailableRooms] = useState<PartiallyAvailableRoom[]>([]);
   const [selectedRoomNo, setSelectedRoomNo] = useState('');
   const primaryPaymentRef = useRef<HTMLDivElement>(null);
-  const pricing = useMemo(() => calculateStayPricing(dates.checkIn, dates.checkOut, holidays), [dates.checkIn, dates.checkOut, holidays]);
+  const pricing = useMemo(() => calculateStayPricing(dates.checkIn, dates.checkOut, pricingHolidays), [dates.checkIn, dates.checkOut, pricingHolidays]);
   const summary = useMemo(() => createBookingSummary({ roomType: 'standard', checkIn: dates.checkIn, checkOut: dates.checkOut, stayNights: pricing.nights }), [dates.checkIn, dates.checkOut, pricing.nights]);
-  const canPay = Boolean(summary && pricing.nights.length && pricing.totalAmount > 0 && paymentState !== 'checking-rooms' && paymentState !== 'creating' && paymentState !== 'redirecting');
+  const canPay = Boolean(summary && pricing.nights.length && pricing.totalAmount > 0 && !holidaysLoading && paymentState !== 'checking-rooms' && paymentState !== 'creating' && paymentState !== 'redirecting');
   const disabledMessage = !summary ? copy.payment.selectDates : copy.payment.checkSchedule;
-  const buttonLabel = paymentState === 'checking-rooms' ? copy.payment.calculating : paymentState === 'creating' ? copy.payment.creating : paymentState === 'redirecting' ? copy.payment.redirecting : canPay ? copy.payment.paypal : disabledMessage;
+  const buttonLabel = holidaysLoading || paymentState === 'checking-rooms' ? copy.payment.calculating : paymentState === 'creating' ? copy.payment.creating : paymentState === 'redirecting' ? copy.payment.redirecting : canPay ? copy.payment.paypal : disabledMessage;
 
   useEffect(() => {
     const target = primaryPaymentRef.current;
@@ -68,6 +71,31 @@ export function BookingFlow({ locale, copy, holidays }: BookingFlowProps) {
     setPaymentState('idle');
     setStatusMessage('');
   }, [dates.checkIn, dates.checkOut]);
+
+  useEffect(() => {
+    if (!calculateStayNights(dates.checkIn, dates.checkOut)) return;
+    const controller = new AbortController();
+    const years = [...new Set([dates.checkIn, dates.checkOut, addDays(dates.checkOut, 1)].map((date) => Number(date.slice(0, 4))))];
+    setHolidaysLoading(true);
+
+    Promise.all(years.map(async (year) => {
+      const response = await fetch(`/api/holidays?year=${year}`, { signal: controller.signal });
+      if (!response.ok) throw new Error('holiday-request-failed');
+      const data = await response.json() as { holidays: Holiday[] };
+      return data.holidays;
+    }))
+      .then((holidayGroups) => {
+        setPricingHolidays((currentHolidays) => {
+          const merged = new Map(currentHolidays.map((holiday) => [holiday.date, holiday]));
+          holidayGroups.flat().forEach((holiday) => merged.set(holiday.date, holiday));
+          return [...merged.values()];
+        });
+      })
+      .catch((error) => { if (error instanceof Error && error.name !== 'AbortError') setStatusMessage(copy.payment.error); })
+      .finally(() => { if (!controller.signal.aborted) setHolidaysLoading(false); });
+
+    return () => controller.abort();
+  }, [copy.payment.error, dates.checkIn, dates.checkOut]);
 
   const requestRoomAvailability = async () => {
     if (!summary || paymentState === 'checking-rooms') return;

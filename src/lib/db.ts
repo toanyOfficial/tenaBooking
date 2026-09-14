@@ -4,6 +4,13 @@ const requiredDatabaseVariables = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD
 
 type DatabaseEnvironmentVariable = (typeof requiredDatabaseVariables)[number];
 
+export function isDatabaseConfigured(): boolean {
+  return requiredDatabaseVariables.every((name) => {
+    const value = process.env[name];
+    return value !== undefined && (name === 'DB_PASSWORD' || value.trim() !== '');
+  });
+}
+
 declare global {
   // Reuse the pool when Next.js reloads modules during local development.
   var tenaBookingDatabasePool: Pool | undefined;
